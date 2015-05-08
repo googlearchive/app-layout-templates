@@ -1,0 +1,107 @@
+<!--
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../../iron-icon/iron-icon.html">
+<link rel="import" href="../../../iron-icons/hardware-icons.html">
+<link rel="import" href="../../../iron-selector/iron-selector.html">
+
+<link rel="import" href="../../../paper-styles/shadow.html">
+<link rel="import" href="../../../paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="device-view.html">
+
+<dom-module id="device-layout-viewer">
+
+  <link rel="import" type="css" href="device-layout-viewer.css">
+
+  <template>
+
+    <div class="main">
+
+      <iron-selector class="view-select" selected="{{device}}" selected-item="{{deviceView}}"
+          attr-for-selected="device" show-all$="{{showAll}}" device$="{{device}}">
+        <device-view device="laptop" src="{{source.src}}"></device-view>
+        <device-view device="tablet" src="{{source.src}}" landscape></device-view>
+        <device-view device="phone" src="{{source.src}}"></device-view>
+      </iron-selector>
+
+    </div>
+
+    <div class="sidebar">
+
+      <h4>Application</h4>
+      <select on-change="_selectChange">
+        <template is="dom-repeat" items="{{sources}}">
+          <option>{{item.name}}</option>
+        </template>
+      </select>
+
+      <h4>Device View</h4>
+      <iron-selector class="device-select" selected="{{device}}" selected-item="{{deviceIcon}}"
+          attr-for-selected="name" show-all$="{{showAll}}" on-iron-activate="_onIconActivate">
+        <iron-icon name="phone" title="Phone" icon="hardware:phone-iphone"></iron-icon>
+        <iron-icon name="tablet" title="Tablet" icon="hardware:tablet-mac" class="landscape"></iron-icon>
+        <iron-icon name="laptop" title="Laptop" icon="hardware:laptop" class="no-landscape"></iron-icon>
+
+      </iron-selector>
+
+      <h4>Show All Views</h4>
+      <paper-toggle-button checked="{{showAll}}"></paper-toggle-button>
+
+    </div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'device-layout-viewer',
+
+      properties: {
+
+        sources: {
+          type: Array,
+          observer: '_sourcesChanged'
+        },
+
+        device: {
+          type: String,
+          value: 'phone'
+        }
+
+      },
+
+      _sourcesChanged: function(sources) {
+        this.source = sources[0];
+      },
+
+      _selectChange: function(e) {
+        this.source = this.sources[e.target.selectedIndex];
+      },
+
+      _onIconActivate: function(e) {
+        var icon = e.detail.item;
+        if (icon === this.deviceIcon) {
+          this._toggleLandscape();
+        }
+      },
+
+      _toggleLandscape: function() {
+        this.deviceIcon.classList.toggle('landscape');
+        this.deviceView.toggleLandscape();
+      }
+
+    });
+
+  </script>
+
+</dom-module>

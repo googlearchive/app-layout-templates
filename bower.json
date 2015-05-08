@@ -1,0 +1,21 @@
+{
+  "name": "app-layout-templates",
+  "authors": [
+    "The Polymer Authors"
+  ],
+  "private": true,
+  "dependencies": {
+    "polymer": "polymer/polymer#v0.9.0-rc.1",
+    "iron-flex-layout": "polymerelements/iron-flex-layout#^0.9.0",
+    "iron-icon": "polymerelements/iron-icon#^0.9.0",
+    "iron-icons": "polymerelements/iron-icons#^0.9.0",
+    "iron-selector": "polymerelements/iron-selector#^0.9.0",
+    "paper-drawer-panel": "polymerelements/paper-drawer-panel#^0.9.0",
+    "paper-icon-button": "polymerelements/paper-icon-button#^0.9.0",
+    "paper-item": "polymerelements/paper-item#^0.9.0",
+    "paper-menu": "polymerelements/paper-menu#^0.9.0",
+    "paper-styles": "polymerelements/paper-styles#^0.9.0",
+    "paper-toggle-button": "polymerelements/paper-toggle-button#^0.9.0",
+    "paper-toolbar": "polymerelements/paper-toolbar#^0.9.0"
+  }
+}

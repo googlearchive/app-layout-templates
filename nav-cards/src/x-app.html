@@ -1,0 +1,69 @@
+<!--
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../../iron-icons/iron-icons.html">
+
+<link rel="import" href="../../../paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../paper-material/paper-material.html">
+<link rel="import" href="../../../paper-menu/paper-menu.html">
+<link rel="import" href="../../../paper-toolbar/paper-toolbar.html">
+
+<dom-module id="x-app">
+
+  <link rel="import" type="css" href="x-app.css">
+
+  <template>
+
+    <paper-drawer-panel id="navPanel" responsive-width="1280px">
+
+      <div class="nav" drawer on-tap="_closeNav">
+        <!-- nav content -->
+      </div>
+
+      <div class="main flex vertical layout" main>
+
+        <paper-toolbar>
+          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+        </paper-toolbar>
+
+        <div class="content flex scroll">
+          <paper-material></paper-material>
+          <paper-material></paper-material>
+          <paper-material></paper-material>
+          <paper-material></paper-material>
+          <paper-material></paper-material>
+          <paper-material></paper-material>
+          <paper-material></paper-material>
+        </div>
+
+      </div>
+
+    </paper-drawer-panel>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'x-app',
+
+      _closeNav: function() {
+        this.$.navPanel.closeDrawer();
+      }
+
+    });
+
+  </script>
+
+</dom-module>
