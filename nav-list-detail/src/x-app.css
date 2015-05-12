@@ -20,6 +20,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 .main-panel [drawer] {
   height: 100%;
   background-color: #fafafa;
+  --paper-header-panel-container: {
+    border-right: 1px solid #ccc;
+  };
 }
 
 paper-toolbar {
@@ -27,9 +30,7 @@ paper-toolbar {
 }
 
 .list {
-  display: block;
   padding: 0;
-  border-right: 1px solid #ccc;
 }
 
 .list paper-item {
@@ -45,3 +46,4 @@ paper-toolbar {
 .main-panel:not([narrow]) [list-toggle] {
   display: none;
 }
+

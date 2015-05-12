@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../paper-material/paper-material.html">
 <link rel="import" href="../../../paper-menu/paper-menu.html">
 <link rel="import" href="../../../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../../paper-header-panel/paper-header-panel.html">
 
 <dom-module id="x-app">
 
@@ -30,9 +31,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- nav content -->
       </div>
 
-      <div class="main flex vertical layout" main>
+      <paper-header-panel mode="waterfall" tall-class="medium-tall" class="main flex vertical layout" main>
 
-        <paper-toolbar>
+        <paper-toolbar class="paper-header">
           <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
         </paper-toolbar>
 
@@ -46,7 +47,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-material></paper-material>
         </div>
 
-      </div>
+      </paper-header-panel>
 
     </paper-drawer-panel>
 

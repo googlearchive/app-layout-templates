@@ -28,7 +28,6 @@ paper-toolbar {
 
 .content {
   padding: 0 16px;
-
 }
 
 paper-material {
@@ -36,4 +35,24 @@ paper-material {
   max-width: 640px;
   margin: 16px auto;
   background-color: #fff;
+}
+
+paper-header-panel {
+  height: 300px;
+}
+
+paper-header-panel .paper-header {
+  font-size: 18px;
+  padding: 0 10px;
+  background-color: #42A5F5;
+  color: #FFF;
+  transition: height 0.2s;
+}
+
+paper-header-panel .paper-header.medium-tall {
+  height: 180px;
+}
+
+paper-header-panel .content {
+  min-height: 2000px;
 }
