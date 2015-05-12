@@ -66,6 +66,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   .view-select:not([show-all]):not([device=laptop]) {
     width: 1400px;
     height: 800px;
+    -webkit-transform: scale(0.5);
     transform: scale(0.5);
     @apply(--layout-flex-none);
   }
@@ -73,7 +74,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   .view-select[show-all] {
     width: 400px;
     height: 300px;
+    -webkit-transform-origin: 0 0;
     transform-origin: 0 0;
+    -webkit-transform: scale(0.6);
     transform: scale(0.6);
   }
 
@@ -105,6 +108,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 .sidebar iron-icon.landscape:not(.no-landscape) {
+  -webkit-transform: rotate(-90deg);
   transform: rotate(-90deg);
 }
 
@@ -120,6 +124,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 paper-toggle-button {
   --paper-toggle-button-unchecked-bar-color: #999;
+}
+
+a > h4 {
+  font-style: italic;
+  text-decoration: underline;
 }
 
 select {

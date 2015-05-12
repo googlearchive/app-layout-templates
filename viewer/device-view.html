@@ -7,8 +7,14 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../../polymer/polymer.html">
+<link rel="import" href="../../polymer/polymer.html">
 
+<!--
+Displays a page on a device layout.
+
+    <device-view device="phone" src="https://www.polymer-project.org/"></device-view>
+
+-->
 <dom-module id="device-view">
 
   <link rel="import" type="css" href="device-view.css">
@@ -27,14 +33,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       properties: {
 
+        /**
+         * The url of the page to show.
+         */
         src: String,
 
+        /**
+         * The device layout to show.  Possible values are `phone`, `tablet` and `laptop`.
+         */
         device: {
           type: String,
-          value: 'phone', // 'phone', 'tablet' or 'laptop'
+          value: 'phone',
           reflectToAttribute: true
         },
 
+        /**
+         * Use landscape orientaion if this is true.
+         */
         landscape: {
           type: Boolean,
           value: false,
@@ -43,6 +58,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
 
+      /**
+       * Toggles the landscape orientation.
+       */
       toggleLandscape: function() {
         this.landscape = !this.landscape;
       }

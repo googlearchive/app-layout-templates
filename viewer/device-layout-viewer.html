@@ -7,17 +7,28 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
-<link rel="import" href="../../../iron-icon/iron-icon.html">
-<link rel="import" href="../../../iron-icons/hardware-icons.html">
-<link rel="import" href="../../../iron-selector/iron-selector.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../iron-icon/iron-icon.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../iron-icons/hardware-icons.html">
+<link rel="import" href="../../iron-selector/iron-selector.html">
 
-<link rel="import" href="../../../paper-styles/shadow.html">
-<link rel="import" href="../../../paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../paper-styles/shadow.html">
+<link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="device-view.html">
 
+<!--
+Displays a page on different device layouts.
+
+    <device-layout-viewer device="phone" sources='[
+      {"name":"Polymer Project","src":"https://www.polymer-project.org/"}
+    ]'></device-layout-viewer>
+
+@demo demo/index.html Basic Demo
+-->
 <dom-module id="device-layout-viewer">
 
   <link rel="import" type="css" href="device-layout-viewer.css">
@@ -35,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </div>
 
-    <div class="sidebar">
+    <div class="sidebar" hidden$="{{hideSidebar}}">
 
       <h4>Application</h4>
       <select on-change="_selectChange">
@@ -44,13 +55,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </template>
       </select>
 
+      <a href="{{source.link}}" target="_blank" hidden="{{!source.link}}"><h4>Github Link</h4></a>
+
       <h4>Device View</h4>
       <iron-selector class="device-select" selected="{{device}}" selected-item="{{deviceIcon}}"
           attr-for-selected="name" show-all$="{{showAll}}" on-iron-activate="_onIconActivate">
         <iron-icon name="phone" title="Phone" icon="hardware:phone-iphone"></iron-icon>
         <iron-icon name="tablet" title="Tablet" icon="hardware:tablet-mac" class="landscape"></iron-icon>
         <iron-icon name="laptop" title="Laptop" icon="hardware:laptop" class="no-landscape"></iron-icon>
-
       </iron-selector>
 
       <h4>Show All Views</h4>
@@ -68,15 +80,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       properties: {
 
+        /**
+         * An array of objects describing the sources.
+         *
+         *     sources = [
+         *       {name: 'Polymer Project', src: 'https://www.polymer-project.org/'},
+         *       {name: 'Polymer Github', src: 'https://github.com/orgs/Polymer/dashboard'}
+         *     ];
+         */
         sources: {
           type: Array,
           observer: '_sourcesChanged'
         },
 
+        /**
+         * The device layout to show.  Possible values are `phone`, `tablet` and `laptop`.
+         */
         device: {
           type: String,
           value: 'phone'
-        }
+        },
+
+        /**
+         * Show all device layouts together.
+         */
+        showAll: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Hides the sidebar.
+         */
+        hideSidebar: Boolean
 
       },
 
@@ -91,11 +127,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _onIconActivate: function(e) {
         var icon = e.detail.item;
         if (icon === this.deviceIcon) {
-          this._toggleLandscape();
+          this.toggleLandscape();
         }
       },
 
-      _toggleLandscape: function() {
+      /**
+       * Toggles the landscape orientation of the current device.
+       */
+      toggleLandscape: function() {
         this.deviceIcon.classList.toggle('landscape');
         this.deviceView.toggleLandscape();
       }

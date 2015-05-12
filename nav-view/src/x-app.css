@@ -22,14 +22,3 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   height: 100%;
   background-color: #eee;
 }
-
-.content {
-  padding: 0 16px;
-}
-
-paper-material {
-  height: 400px;
-  max-width: 640px;
-  margin: 16px auto;
-  background-color: #fff;
-}
