@@ -624,36 +624,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS
---><!--
-`paper-item` is a non-interactive list item.
-
-@element paper-item
 --><!-- TODO(nevir): Should we upgrade Polymer/font-roboto to the final font? --><!--
-    @license
-    Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-    Code distributed by Google as part of the polymer project is also
-    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-
-`paper-material` is a container that renders two shadows on top of each other to
-create the effect of a lifted piece of paper.
-
-Example:
-
-    <paper-material elevation="1">
-      ... content ...
-    </paper-material>
-
-@group Paper Elements
-@class paper-material
---><!--
-`<paper-menu>` implements an accessible menu control with Material Design styling.
---><!--
-`Polymer.IronMenuBehavior` implements accessible menu behavior.
---><!--
 `paper-toolbar` is a horizontal bar containing items that can be used for
 label, navigation, search and actions.  The items place inside the
 `paper-toolbar` are projected into a `class="horizontal center layout"` container inside of
@@ -698,7 +669,7 @@ still honored separately.
 @group Polymer Core Elements
 @element paper-toolbar
 @homepage github.io
---><!-- Nav Content --><!--
+--><!-- Nav Content --><!-- Main Content --><!--
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -707,7 +678,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-  <title>Nav Cards</title>
+  <title>Nav View</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -11265,136 +11236,6 @@ Polymer.Debounce = (function() {
   }
 
 </style>
-
-
-
-
-
-
-<script>
-
-  Polymer.IronMenuBehavior = Polymer.IronMultiSelectableBehavior.concat({
-
-    properties: {
-
-      /**
-       * Returns the currently focused item.
-       *
-       * @attribute focusedItem
-       * @type Object
-       */
-      focusedItem: {
-        observer: '_focusedItemChanged',
-        readOnly: true,
-        type: Object
-      },
-
-      /**
-       * The attribute to use on menu items to look up the item title. Typing the first
-       * letter of an item when the menu is open focuses that item. If unset, `textContent`
-       * will be used.
-       *
-       * @attribute attrForItemTitle
-       * @type String
-       */
-      attrForItemTitle: {
-        type: String
-      }
-
-    },
-
-    observers: [
-      '_selectedItemsChanged(selectedItems)',
-      '_selectedItemChanged(selectedItem)'
-    ],
-
-    hostAttributes: {
-      'role': 'menu',
-      'tabindex': '0'
-    },
-
-    listeners: {
-      'focus': '_onFocus',
-      'keydown': '_onKeydown'
-    },
-
-    _focusedItemChanged: function(focusedItem, old) {
-      old && old.setAttribute('tabindex', '-1');
-      if (focusedItem) {
-        focusedItem.setAttribute('tabindex', '0');
-        focusedItem.focus();
-      }
-    },
-
-    _selectedItemsChanged: function(selectedItems) {
-      this._setFocusedItem(selectedItems[0]);
-    },
-
-    _selectedItemChanged: function(selectedItem) {
-      this._setFocusedItem(selectedItem);
-    },
-
-    _onFocus: function(event) {
-      // clear the cached focus item
-      this._setFocusedItem(null);
-      // focus the selected item when the menu receives focus, or the first item
-      // if no item is selected
-      var selectedItem = this.multi ? (this.selectedItems && this.selectedItems[0]) : this.selectedItem;
-      if (selectedItem) {
-        this._setFocusedItem(selectedItem);
-      } else {
-        this._setFocusedItem(this.items[0]);
-      }
-    },
-
-    _onKeydown: function(event) {
-      // FIXME want to define these somewhere, core-a11y-keys?
-      var DOWN = 40;
-      var UP = 38;
-      var ESC = 27;
-      var ENTER = 13;
-      if (event.keyCode === DOWN) {
-        // up and down arrows moves the focus
-        this._focusNext();
-      } else if (event.keyCode === UP) {
-        this._focusPrevious();
-      } else if (event.keyCode === ESC) {
-        // esc blurs the control
-        this.focusedItem.blur();
-      } else if (event.keyCode === ENTER) {
-        // enter activates the item unless it is disabled
-        if (!this.focusedItem.hasAttribute('disabled')) {
-          this._activateHandler(event);
-        }
-      } else {
-        // all other keys focus the menu item starting with that character
-        for (var i = 0, item; item = this.items[i]; i++) {
-          var attr = this.attrForItemTitle || 'textContent';
-          var title = item[attr] || item.getAttribute(attr);
-          if (title && title.trim().charAt(0).toLowerCase() === String.fromCharCode(event.keyCode).toLowerCase()) {
-            this._setFocusedItem(item);
-            break;
-          }
-        }
-      }
-    },
-
-    _focusPrevious: function() {
-      var length = this.items.length;
-      var index = (Number(this.indexOf(this.focusedItem)) - 1 + length) % length;
-      this._setFocusedItem(this.items[index]);
-    },
-
-    _focusNext: function() {
-      var index = (Number(this.indexOf(this.focusedItem)) + 1) % this.items.length;
-      this._setFocusedItem(this.items[index]);
-    }
-
-  });
-
-</script>
-
-
 <style is="custom-style">
 
   * {
@@ -12953,201 +12794,6 @@ Polymer.Debounce = (function() {
     }
   });
 </script>
-<dom-module id="paper-item" assetpath="../../paper-item/">
-
-  <style>
-/*
-    @license
-    Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-    Code distributed by Google as part of the polymer project is also
-    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-:host {
-  display: block;
-  min-height: 48px;
-  padding: 0px 16px;
-}
-
-:host > ::content > *:not(:first-child):not(:last-child) {
-  margin-right: 16px;
-}
-
-</style>
-
-  <style>
-
-    :host {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-      @apply(--paper-font-subhead);
-
-      @apply(--paper-item);
-    }
-
-  </style>
-
-  <template>
-    <content></content>
-  </template>
-
-</dom-module>
-
-<script>
-
-(function() {
-
-  Polymer({
-
-    is: 'paper-item',
-
-    hostAttributes: {
-      role: 'listitem'
-    }
-
-  });
-
-})();
-
-</script>
-<dom-module id="paper-material" assetpath="../../paper-material/">
-  <style>
-    :host {
-      display: block;
-      position: relative;
-      @apply(--shadow-transition);
-    }
-
-    :host([elevation="1"]) {
-      @apply(--shadow-elevation-2dp);
-    }
-
-    :host([elevation="2"]) {
-      @apply(--shadow-elevation-4dp);
-    }
-
-    :host([elevation="3"]) {
-      @apply(--shadow-elevation-6dp);
-    }
-
-    :host([elevation="4"]) {
-      @apply(--shadow-elevation-8dp);
-    }
-
-    :host([elevation="5"]) {
-      @apply(--shadow-elevation-16dp);
-    }
-  </style>
-  <template>
-    <content></content>
-  </template>
-</dom-module>
-<script>
-  Polymer({
-    is: 'paper-material',
-
-    properties: {
-
-      /**
-       * The z-depth of this element, from 0-5. Setting to 0 will remove the
-       * shadow, and each increasing number greater than 0 will be "deeper"
-       * than the last.
-       *
-       * @attribute elevation
-       * @type number
-       * @default 1
-       */
-      elevation: {
-        type: Number,
-        reflectToAttribute: true,
-        value: 1
-      },
-
-      /**
-       * Set this to true to animate the shadow when setting a new
-       * `elevation` value.
-       *
-       * @attribute animated
-       * @type boolean
-       * @default false
-       */
-      animated: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false
-      }
-    }
-  });
-</script>
-<dom-module id="paper-menu" assetpath="../../paper-menu/">
-
-  <style>
-
-    :host {
-      display: block;
-      padding: 8px 0;
-
-      background: var(--paper-menu-background-color, --primary-background-color);
-      color: var(--paper-menu-color, --primary-text-color);
-
-      mixin(--paper-menu);
-    }
-
-    :host > ::content > [disabled] {
-      color: var(--paper-menu-disabled-color, --disabled-text-color);
-    }
-
-    :host > ::content > .iron-selected {
-      position: relative;
-    }
-
-    :host > ::content > .iron-selected::after {
-      @apply(--layout-fit);
-
-      background: currentColor;
-      /* FIXME move to paper-styles for next widget */
-      opacity: 0.12;
-      content: '';
-
-      mixin(--paper-menu-selected-item);
-    }
-
-    :host > ::content > .iron-selected[colored]::after {
-      opacity: 0.26;
-
-      mixin(--paper-menu-colored-selected-item);
-    }
-
-  </style>
-
-  <template>
-
-    <content></content>
-
-  </template>
-
-</dom-module>
-
-<script>
-
-(function() {
-
-  Polymer({
-
-    is: 'paper-menu',
-
-    behaviors: [
-      Polymer.IronMenuBehavior
-    ]
-
-  });
-
-})();
-
-</script>
 <dom-module id="paper-toolbar" assetpath="../../paper-toolbar/">
 
   <style>
@@ -13384,17 +13030,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   background-color: #eee;
 }
 
-.content {
-  padding: 0 16px;
-}
-
-paper-material {
-  height: 400px;
-  max-width: 640px;
-  margin: 16px auto;
-  background-color: #fff;
-}
-
 </style>
 
   <template>
@@ -13405,20 +13040,14 @@ paper-material {
 
       </div>
 
-      <div class="main flex vertical layout" main="">
+      <div class="main vertical layout" main="">
 
         <paper-toolbar>
           <paper-icon-button icon="menu" paper-drawer-toggle=""></paper-icon-button>
         </paper-toolbar>
 
-        <div class="content flex scroll">
-          <paper-material></paper-material>
-          <paper-material></paper-material>
-          <paper-material></paper-material>
-          <paper-material></paper-material>
-          <paper-material></paper-material>
-          <paper-material></paper-material>
-          <paper-material></paper-material>
+        <div class="content flex">
+
         </div>
 
       </div>

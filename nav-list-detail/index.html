@@ -685,7 +685,7 @@ still honored separately.
 @group Polymer Core Elements
 @element paper-toolbar
 @homepage github.io
---><!-- nav content --><!-- detail content --><!--
+--><!-- Nav Content --><!-- Main Content --><!--
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -700,7 +700,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-  <script src="https://rawgit.com/webcomponents/webcomponentsjs/master/webcomponents-lite.js"></script>
+  <script src="https://www.polymer-project.org/0.5/components/webcomponentsjs/webcomponents-lite.js"></script>
   <script>
 
   Polymer = {
@@ -2294,6 +2294,7 @@ Polymer.domInnerHTML = (function() {
 <script>
 
   Polymer.DomApi = (function() {
+    'use strict';
 
     var Settings = Polymer.Settings;
     var getInnerHTML = Polymer.domInnerHTML.getInnerHTML;
@@ -2646,9 +2647,57 @@ Polymer.domInnerHTML = (function() {
         while (this.childNodes.length) {
           this.removeChild(this.childNodes[0]);
         }
+      },
+
+      setAttribute: function(name, value) {
+        this.node.setAttribute(name, value);
+        this._distributeParent();
+      },
+
+      removeAttribute: function(name) {
+        this.node.removeAttribute(name);
+        this._distributeParent();
+      },
+
+      _distributeParent: function() {
+        if (this.parentNode && this.parentNode.shadyRoot) {
+          this._lazyDistribute(this.parentNode);
+        }
       }
 
     };
+
+    Object.defineProperty(DomApi.prototype, 'classList', {
+      get: function() {
+        if (!this._classList) {
+          this._classList = new DomApi.ClassList(this);
+        }
+        return this._classList;
+      },
+      configurable: true
+    });
+
+    DomApi.ClassList = function(host) {
+      this.domApi = host;
+      this.node = host.node;
+    }
+
+    DomApi.ClassList.prototype = {
+      add: function() {
+        this.node.classList.add.apply(this.node.classList, arguments);
+        this.domApi._distributeParent();
+      },
+
+      remove: function() {
+        this.node.classList.remove.apply(this.node.classList, arguments);
+        this.domApi._distributeParent();
+      },
+
+      toggle: function() {
+        this.node.classList.toggle.apply(this.node.classList, arguments);
+        this.domApi._distributeParent();
+      }
+    }
 
     // changes and accessors...
     if (!Settings.useShadow) {
@@ -2798,6 +2847,7 @@ Polymer.domInnerHTML = (function() {
         return getInnerHTML(this.node, true);
       };
 
+
     } else {
 
       DomApi.prototype.querySelectorAll = function(selector) {
@@ -2823,6 +2873,8 @@ Polymer.domInnerHTML = (function() {
         var n$ = this.node.getDistributedNodes();
         return n$ ? Array.prototype.slice.call(n$) : [];
       };
+
+      DomApi.prototype._distributeParent = function() {}
 
       Object.defineProperties(DomApi.prototype, {
 
@@ -3048,15 +3100,18 @@ Polymer.domInnerHTML = (function() {
        * Force this element to distribute its children to its local dom.
        * A user should call `distributeContent` if distribution has been
        * invalidated due to changes to selectors on child elements that
-       * effect distribution. For example, if an element contains an
-       * insertion point with <content select=".foo"> and a `foo` class is
-       * added to a child, then `distributeContent` must be called to update
+       * effect distribution that were not made via `Polymer.dom`.
+       * For example, if an element contains an insertion point with
+       * <content select=".foo"> and a `foo` class is added to a child,
+       * then `distributeContent` must be called to update
        * local dom distribution.
        */
       distributeContent: function() {
-        if (this._useContent) {
-          this.shadyRoot._distributionClean = false;
-          this._distributeContent();
+        if (this.shadyRoot) {
+          // Distribute the host that's the top of this element's distribution
+          // tree. Distributing that host will *always* distibute this element.
+          var host = getTopDistributingHost(this);
+          Polymer.dom(this)._lazyDistribute(host);
         }
       },
 
@@ -3127,6 +3182,9 @@ Polymer.domInnerHTML = (function() {
           if (child._destinationInsertionPoints) {
             child._destinationInsertionPoints = undefined;
           }
+          if (isInsertionPoint(child)) {
+            clearDistributedDestinationInsertionPoints(child);
+          }
         }
         // insertion points
         var root = this.shadyRoot;
@@ -3159,6 +3217,10 @@ Polymer.domInnerHTML = (function() {
         var p$ = node._insertionPoints;
         for (var i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
           this._distributeInsertionPoint(p, pool);
+          // provoke redistribution on insertion point parents
+          // must do this on all candidate hosts since distribution in this
+          // scope invalidates their distribution.
+          maybeRedistributeParent(p, this);
         }
       },
 
@@ -3178,13 +3240,6 @@ Polymer.domInnerHTML = (function() {
             pool[i] = undefined;
             // since at least one node matched, we won't need fallback content
             anyDistributed = true;
-            var parent = content.lightParent;
-            // dirty a shadyRoot if a change may trigger reprojection!
-            if (parent && parent.shadyRoot &&
-              hasInsertionPoint(parent.shadyRoot)) {
-              parent.shadyRoot._distributionClean = false;
-              this.shadyRoot._dirtyRoots.push(parent);
-            }
           }
         }
         // Fallback content if nothing was distributed here
@@ -3304,11 +3359,30 @@ Polymer.domInnerHTML = (function() {
       var points = child._destinationInsertionPoints;
       if (!points) {
         child._destinationInsertionPoints = [insertionPoint];
-      // TODO(sorvell): _destinationInsertionPoints may not be cleared when
-      // nodes are dynamically added/removed, therefore test before adding
-      // insertion points.
-      } else if (points.indexOf(insertionPoint) < 0) {
+      } else {
         points.push(insertionPoint);
+      }
+    }
+
+    function clearDistributedDestinationInsertionPoints(content) {
+      var e$ = content._distributedNodes;
+      for (var i=0; i < e$.length; i++) {
+        var d = e$[i]._destinationInsertionPoints;
+        if (d) {
+           // this is +1 because these insertion points are *not* in this scope
+           d.splice(d.indexOf(content)+1, d.length);
+        }
+      }
+    }
+
+    // dirty a shadyRoot if a change may trigger reprojection!
+    function maybeRedistributeParent(content, host) {
+      var parent = content.lightParent;
+      if (parent && parent.shadyRoot &&
+          hasInsertionPoint(parent.shadyRoot) &&
+          parent.shadyRoot._distributionClean) {
+        parent.shadyRoot._distributionClean = false;
+        host.shadyRoot._dirtyRoots.push(parent);
       }
     }
 
@@ -3355,6 +3429,27 @@ Polymer.domInnerHTML = (function() {
     function getComposedParent(node) {
       return node.__patched ? node._composedParent : node.parentNode;
     }
+
+    // returns the host that's the top of this host's distribution tree
+    function getTopDistributingHost(host) {
+      while (host && hostNeedsRedistribution(host)) {
+        host = host.domHost;
+      }
+      return host;
+    }
+
+    // Return true if a host's children includes
+    // an insertion point that selects selectively
+    function hostNeedsRedistribution(host) {
+      var c$ = Polymer.dom(host).children;
+      for (var i=0, c; i < c$.length; i++) {
+        c = c$[i];
+        if (c.localName === 'content') {
+          return host.domHost;
+        }
+      }
+    }
+
   })();
 
 </script>
@@ -3590,11 +3685,7 @@ Polymer.domInnerHTML = (function() {
 
     // 1. Parse annotations from the template and memoize them on
     //    content._notes (recurses into nested templates)
-    // 2. Parse template bindings for parent.* properties and memoize them on
-    //    content._parentProps
-    // 3. Create bindings in current scope's annotation list to template for
-    //    parent props found in template
-    // 4. Remove template.content and store it in annotation list, where it
+    // 2. Remove template.content and store it in annotation list, where it
     //    will be the responsibility of the host to set it back to the template
     //    (this is both an optimization to avoid re-stamping nested template
     //    children and avoids a bug in Chrome where nested template children
@@ -3605,53 +3696,15 @@ Polymer.domInnerHTML = (function() {
       var content = document.createDocumentFragment();
       content._notes = this.parseAnnotations(node);
       content.appendChild(node.content);
-      // Special-case treatment of 'parent.*' props for nested templates
-      // Automatically bind `prop` on host to `_parent_prop` on template
-      // for any `parent.prop`'s encountered in template binding; it is
-      // responsibility of the template implementation to forward
-      // these properties as appropriate
-      var bindings = [];
-      this._discoverTemplateParentProps(content);
-      for (var prop in content._parentProps) {
-        bindings.push({
-          index: index,
-          kind: 'property',
-          mode: '{',
-          name: '_parent_' + prop,
-          value: prop
-        });
-      }
       // TODO(sjmiles): using `nar` to avoid unnecessary allocation;
       // in general the handling of these arrays needs some cleanup
       // in this module
       list.push({
-        bindings: bindings,
+        bindings: Polymer.nar,
         events: Polymer.nar,
         templateContent: content,
         parent: parent,
         index: index
-      });
-    },
-
-    // Finds all bindings in template content and stores the path roots in
-    // the path members in content._parentProps. Each outer template merges
-    // inner _parentProps to propagate inner parent property needs to outer
-    // templates.
-    _discoverTemplateParentProps: function(content) {
-      var pp = content._parentProps = {};
-      content._notes.forEach(function(n) {
-        // Find all bindings to parent.* and spread them into _parentPropChain
-        n.bindings.forEach(function(b) {
-          var prop = b.value;
-          var dot = prop.indexOf('.');
-          prop = (dot < 0) ? prop : prop.slice(0, dot);
-          pp[prop] = true;
-        });
-        // Merge child _parentProps into this _parentProps
-        if (n.templateContent) {
-          var tpp = n.templateContent._parentProps;
-          Polymer.Base.mixin(pp, tpp);
-        }
       });
     },
 
@@ -3939,8 +3992,68 @@ TODO(sjmiles): this module should produce either syntactic metadata
         // TODO(sorvell): ad hoc method of plugging behavior into Annotations
         Polymer.Annotations.prepElement = this._prepElement.bind(this);
         this._notes = Polymer.Annotations.parseAnnotations(this._template);
+        this._processAnnotations(this._notes);
         Polymer.Annotations.prepElement = null;
       }
+    },
+
+    _processAnnotations: function(notes) {
+      for (var i=0; i<notes.length; i++) {
+        var note = notes[i];
+        // Parse bindings for methods & path roots (models)
+        for (var j=0; j<note.bindings.length; j++) {
+          var b = note.bindings[j];
+          b.signature = this._parseMethod(b.value);
+          if (!b.signature) {
+            b.model = this._modelForPath(b.value);
+          }
+        }
+        // Recurse into nested templates & bind parent props
+        if (note.templateContent) {
+          this._processAnnotations(note.templateContent._notes);
+          var pp = note.templateContent._parentProps =
+            this._discoverTemplateParentProps(note.templateContent._notes);
+          var bindings = [];
+          for (var prop in pp) {
+            bindings.push({
+              index: note.index,
+              kind: 'property',
+              mode: '{',
+              name: '_parent_' + prop,
+              model: prop,
+              value: prop
+            });
+          }
+          note.bindings = note.bindings.concat(bindings);
+        }
+      }
+    },
+
+    // Finds all bindings in template content and stores the path roots in
+    // the path members in content._parentProps. Each outer template merges
+    // inner _parentProps to propagate inner parent property needs to outer
+    // templates.
+    _discoverTemplateParentProps: function(notes) {
+      var pp = {};
+      notes.forEach(function(n) {
+        // Find all bindings to parent.* and spread them into _parentPropChain
+        n.bindings.forEach(function(b) {
+          if (b.signature) {
+            var args = b.signature.args;
+            for (var k=0; k<args.length; k++) {
+              pp[args[k].model] = true;
+            }
+          } else {
+            pp[b.model] = true;
+          }
+        });
+        // Merge child _parentProps into this _parentProps
+        if (n.templateContent) {
+          var tpp = n.templateContent._parentProps;
+          Polymer.Base.mixin(pp, tpp);
+        }
+      });
+      return pp;
     },
 
     _prepElement: function(element) {
@@ -4098,7 +4211,11 @@ TODO(sjmiles): this module should produce either syntactic metadata
   var GESTURE_KEY = '__polymerGestures';
   var HANDLED_OBJ = '__polymerGesturesHandled';
   var TOUCH_ACTION = '__polymerGesturesTouchAction';
+  // radius for tap and track
   var TAP_DISTANCE = 25;
+  var TRACK_DISTANCE = 5;
+  // number of last N track positions to keep
+  var TRACK_LENGTH = 2;
 
   // Disabling "mouse" handlers for 500ms is enough
   var MOUSE_TIMEOUT = 500;
@@ -4110,6 +4227,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
   // disable mouse handlers for MOUSE_TIMEOUT ms after
   // a touchend to ignore synthetic mouse events
   var mouseCanceller = function(mouseEvent) {
+    // skip synthetic mouse events
     mouseEvent[HANDLED_OBJ] = {skip: true};
     // disable "ghost clicks"
     if (mouseEvent.type === 'click') {
@@ -4125,6 +4243,10 @@ TODO(sjmiles): this module should produce either syntactic metadata
   };
 
   function ignoreMouse(set) {
+    // manual debounce
+    if (set && POINTERSTATE.touch.mouseIgnoreId !== -1) {
+      return;
+    }
     for (var i = 0, en; i < MOUSE_EVENTS.length; i++) {
       en = MOUSE_EVENTS[i];
       if (set) {
@@ -4135,9 +4257,10 @@ TODO(sjmiles): this module should produce either syntactic metadata
     }
     if (set) {
       // disable MOUSE_CANCELLER after MOUSE_TIMEOUT ms
-      setTimeout(ignoreMouse, MOUSE_TIMEOUT);
+      POINTERSTATE.mouse.mouseIgnoreId = setTimeout(ignoreMouse, MOUSE_TIMEOUT);
     } else {
       POINTERSTATE.mouse.target = null;
+      POINTERSTATE.touch.mouseIgnoreId = -1;
     }
   }
 
@@ -4150,7 +4273,8 @@ TODO(sjmiles): this module should produce either syntactic metadata
       x: 0,
       y: 0,
       id: -1,
-      scrollDecided: false
+      scrollDecided: false,
+      mouseIgnoreId: -1
     }
   };
 
@@ -4175,6 +4299,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
       next = next.elementFromPoint(x, y);
       if (next) {
         node = next;
+        next = next.shadowRoot;
       }
     }
     return node;
@@ -4195,27 +4320,31 @@ TODO(sjmiles): this module should produce either syntactic metadata
       }
       if (!ev[HANDLED_OBJ]) {
         ev[HANDLED_OBJ] = {};
-        if (type === 'touchstart') {
-          if (POINTERSTATE.touch.id === -1) {
-            POINTERSTATE.touch.id = ev.changedTouches[0].touchIdentifier;
+        if (type.slice(0, 5) === 'touch') {
+          var t = ev.changedTouches[0];
+          if (type === 'touchstart') {
+            // only handle the first finger
+            if (ev.touches.length === 1) {
+              POINTERSTATE.touch.id = t.identifier;
+            }
           }
-        }
-        if (!HAS_NATIVE_TA) {
-          if (type === 'touchstart' || type === 'touchmove') {
-            Gestures.handleTouchAction(ev);
+          if (POINTERSTATE.touch.id !== t.identifier) {
+            return;
           }
-        }
-        if (type === 'touchend') {
-          POINTERSTATE.mouse.target = Polymer.dom(ev).rootTarget;
-        }
-      }
-      // only handle the first finger
-      if (type.slice(0, 5) === 'touch') {
-        if (POINTERSTATE.touch.id !== ev.changedTouches[0].touchIdentifier) {
-          return;
+          if (!HAS_NATIVE_TA) {
+            if (type === 'touchstart' || type === 'touchmove') {
+              Gestures.handleTouchAction(ev);
+            }
+          }
+          if (type === 'touchend') {
+            POINTERSTATE.mouse.target = Polymer.dom(ev).rootTarget;
+            // ignore syntethic mouse events after a touch
+            ignoreMouse(true);
+          }
         }
       }
       handled = ev[HANDLED_OBJ];
+      // used to ignore synthetic mouse events
       if (handled.skip) {
         return;
       }
@@ -4227,11 +4356,6 @@ TODO(sjmiles): this module should produce either syntactic metadata
           handled[r.name] = true;
           r[type](ev);
         }
-      }
-      // ignore syntethic mouse events after a touch
-      if (type === 'touchend') {
-        POINTERSTATE.touch.id = -1;
-        ignoreMouse(true);
       }
     },
 
@@ -4349,16 +4473,18 @@ TODO(sjmiles): this module should produce either syntactic metadata
   Gestures.register({
     name: 'track',
     touchAction: 'none',
-    deps: ['mousedown', 'touchmove', 'touchend'],
+    deps: ['mousedown', 'touchstart', 'touchmove', 'touchend'],
     emits: ['track'],
 
     info: {
+      x: 0,
+      y: 0,
       state: 'start',
       started: false,
       moves: [],
       addMove: function(move) {
-        if (this.moves.length > 5) {
-          this.moves.splice(1, 1);
+        if (this.moves.length > TRACK_LENGTH) {
+          this.moves.shift();
         }
         this.moves.push(move);
       }
@@ -4368,18 +4494,32 @@ TODO(sjmiles): this module should produce either syntactic metadata
       this.info.state = 'start';
       this.info.started = false;
       this.info.moves = [];
+      this.info.x = 0;
+      this.info.y = 0;
+    },
+
+    hasMovedEnough: function(x, y) {
+      if (this.info.started) {
+        return true;
+      }
+      var dx = Math.abs(this.info.x - x);
+      var dy = Math.abs(this.info.y - y);
+      return (dx >= TRACK_DISTANCE || dy >= TRACK_DISTANCE);
     },
 
     mousedown: function(e) {
       var t = e.currentTarget;
       var self = this;
       var movefn = function movefn(e) {
-        // first move is 'start', subsequent moves are 'move', mouseup is 'end'
-        self.info.state = self.info.started ? (e.type === 'mouseup' ? 'end' : 'track') : 'start';
-        self.info.addMove({x: e.clientX, y: e.clientY});
-        self.fire(t, e);
-        e.preventDefault();
-        self.info.started = true;
+        var x = e.clientX, y = e.clientY;
+        if (self.hasMovedEnough(x, y)) {
+          // first move is 'start', subsequent moves are 'move', mouseup is 'end'
+          self.info.state = self.info.started ? (e.type === 'mouseup' ? 'end' : 'track') : 'start';
+          self.info.addMove({x: x, y: y});
+          self.fire(t, e);
+          e.preventDefault();
+          self.info.started = true;
+        }
       };
       var upfn = function upfn(e) {
         if (self.info.started) {
@@ -4394,21 +4534,33 @@ TODO(sjmiles): this module should produce either syntactic metadata
       // add temporary document listeners as mouse retargets
       document.addEventListener('mousemove', movefn);
       document.addEventListener('mouseup', upfn);
+      this.info.x = e.clientX;
+      this.info.y = e.clientY;
+    },
+
+    touchstart: function(e) {
+      var ct = e.changedTouches[0];
+      this.info.x = ct.clientX;
+      this.info.y = ct.clientY;
     },
 
     touchmove: function(e) {
       var t = e.currentTarget;
       var ct = e.changedTouches[0];
-      this.info.addMove({x: ct.clientX, y: ct.clientY});
-      this.fire(t, ct);
-      this.info.state = 'track';
+      var x = ct.clientX, y = ct.clientY;
+      if (this.hasMovedEnough(x, y)) {
+        this.info.addMove({x: x, y: y});
+        this.fire(t, ct);
+        this.info.state = 'track';
+        this.info.started = true;
+      }
     },
 
     touchend: function(e) {
       var t = e.currentTarget;
       var ct = e.changedTouches[0];
       // only trackend if track was started and not aborted
-      if (this.info.state !== 'start') {
+      if (this.info.started) {
         // iff tracking, always prevent tap
         POINTERSTATE.tapPrevented = true;
         // reset started state on up
@@ -4422,12 +4574,8 @@ TODO(sjmiles): this module should produce either syntactic metadata
     fire: function(target, touch) {
       var secondlast = this.info.moves[this.info.moves.length - 2];
       var lastmove = this.info.moves[this.info.moves.length - 1];
-      var firstmove = this.info.moves[0];
-      var dx, dy = 0;
-      if (firstmove) {
-        dx = lastmove.x - firstmove.x;
-        dy = lastmove.y - firstmove.y;
-      }
+      var dx = lastmove.x - this.info.x;
+      var dy = lastmove.y - this.info.y;
       var ddx, ddy = 0;
       if (secondlast) {
         ddx = lastmove.x - secondlast.x;
@@ -4684,9 +4832,9 @@ Polymer.Debounce = (function() {
         bool = !node.classList.contains(name);
       }
       if (bool) {
-        node.classList.add(name);
+        Polymer.dom(node).classList.add(name);
       } else {
-        node.classList.remove(name);
+        Polymer.dom(node).classList.remove(name);
       }
     },
 
@@ -4705,9 +4853,9 @@ Polymer.Debounce = (function() {
         bool = !node.hasAttribute(name);
       }
       if (bool) {
-        node.setAttribute(name, '');
+        Polymer.dom(node).setAttribute(name, '');
       } else {
-        node.removeAttribute(name);
+        Polymer.dom(node).removeAttribute(name);
       }
     },
 
@@ -4721,10 +4869,10 @@ Polymer.Debounce = (function() {
      */
     classFollows: function(name, toElement, fromElement) {
       if (fromElement) {
-        fromElement.classList.remove(name);
+        Polymer.dom(fromElement).classList.remove(name);
       }
       if (toElement) {
-        toElement.classList.add(name);
+        Polymer.dom(toElement).classList.add(name);
       }
     },
 
@@ -4738,10 +4886,10 @@ Polymer.Debounce = (function() {
      */
     attributeFollows: function(name, toElement, fromElement) {
       if (fromElement) {
-        fromElement.removeAttribute(name);
+        Polymer.dom(fromElement).removeAttribute(name);
       }
       if (toElement) {
-        toElement.setAttribute(name, '');
+        Polymer.dom(toElement).setAttribute(name, '');
       }
     },
 
@@ -5267,10 +5415,7 @@ Polymer.Debounce = (function() {
   Polymer.Base._addFeature({
 
     _addPropertyEffect: function(property, kind, effect) {
-     // TODO(sjmiles): everything to the right of the first '.' is lost, implies
-     // there is some duplicate information flow (not the only sign)
-     var model = property.split('.').shift();
-     Polymer.Bind.addPropertyEffect(this, model, kind, effect);
+     Polymer.Bind.addPropertyEffect(this, property, kind, effect);
     },
 
     // prototyping
@@ -5313,13 +5458,16 @@ Polymer.Debounce = (function() {
       if (m) {
         return {
           method: m[1],
-          args: m[2].split(/[^\w.*]+/).map(this._parseArg)
+          args: m[2].split(/[^\w.*]+/).map(this._parseArg, this)
         };
       }
     },
 
     _parseArg: function(arg) {
-      var a = { name: arg };
+      var a = {
+        name: arg,
+        model: this._modelForPath(arg)
+      };
       a.structured = arg.indexOf('.') > 0;
       if (a.structured) {
         a.wildcard = (arg.slice(-2) == '.*');
@@ -5333,7 +5481,7 @@ Polymer.Debounce = (function() {
     _addComputedEffect: function(name, expression) {
       var sig = this._parseMethod(expression);
       sig.args.forEach(function(arg) {
-        this._addPropertyEffect(arg.name, 'compute', {
+        this._addPropertyEffect(arg.model, 'compute', {
           method: sig.method,
           args: sig.args,
           arg: arg,
@@ -5360,7 +5508,7 @@ Polymer.Debounce = (function() {
     _addComplexObserverEffect: function(observer) {
       var sig = this._parseMethod(observer);
       sig.args.forEach(function(arg) {
-        this._addPropertyEffect(arg.name, 'complexObserver', {
+        this._addPropertyEffect(arg.model, 'complexObserver', {
           method: sig.method,
           args: sig.args,
           arg: arg
@@ -5388,22 +5536,20 @@ Polymer.Debounce = (function() {
         Polymer.Bind._addAnnotatedListener(this, index,
           note.name, note.value, note.event);
       }
-      var sig = this._parseMethod(note.value);
-      if (sig) {
-        this._addAnnotatedComputationEffect(sig, note, index);
+      if (note.signature) {
+        this._addAnnotatedComputationEffect(note, index);
       } else {
         // capture the node index
         note.index = index;
-        // discover top-level property (model) from path
-        var model = note.value.split('.').shift();
         // add 'annotation' binding effect for property 'model'
-        this._addPropertyEffect(model, 'annotation', note);
+        this._addPropertyEffect(note.model, 'annotation', note);
       }
     },
 
-    _addAnnotatedComputationEffect: function(sig, note, index) {
+    _addAnnotatedComputationEffect: function(note, index) {
+      var sig = note.signature;
       sig.args.forEach(function(arg) {
-        this._addPropertyEffect(arg.name, 'annotatedComputation', {
+        this._addPropertyEffect(arg.model, 'annotatedComputation', {
           kind: note.kind,
           method: sig.method,
           args: sig.args,
@@ -5880,7 +6026,8 @@ Polymer.Debounce = (function() {
       },
 
       _modelForPath: function(path) {
-        return path.split('.').shift();
+        var dot = path.indexOf('.');
+        return (dot < 0) ? path : path.slice(0, dot);
       },
 
       _EVENT_CHANGED: '-changed',
@@ -7365,28 +7512,20 @@ Polymer.Debounce = (function() {
     },
 
     _customPrepAnnotations: function(archetype, template) {
-      if (template) {
-        archetype._template = template;
-        var c = template._content;
-        if (c) {
-          var rootDataHost = archetype._rootDataHost;
-          if (rootDataHost) {
-            Polymer.Annotations.prepElement =
-              rootDataHost._prepElement.bind(rootDataHost);
-          }
-          archetype._notes = c._notes ||
-            Polymer.Annotations.parseAnnotations(template);
-          c._notes = archetype._notes;
-          Polymer.Annotations.prepElement = null;
-          archetype._parentProps = c._parentProps;
+      archetype._template = template;
+      var c = template._content;
+      if (!c._notes) {
+        var rootDataHost = archetype._rootDataHost;
+        if (rootDataHost) {
+          Polymer.Annotations.prepElement =
+            rootDataHost._prepElement.bind(rootDataHost);
         }
-        else {
-          console.warn('no _content');
-        }
+        c._notes = Polymer.Annotations.parseAnnotations(template);
+        Polymer.Annotations.prepElement = null;
+        this._processAnnotations(c._notes);
       }
-      else {
-        console.warn('no _template');
-      }
+      archetype._notes = c._notes;
+      archetype._parentProps = c._parentProps;
     },
 
     // Sets up accessors on the template to call abstract _forwardParentProp
@@ -10368,7 +10507,7 @@ Polymer.Debounce = (function() {
 <script>
 
   Polymer.IronMultiSelectableBehavior = [
-    Polymer.IronSelectableBehavior, {
+    {
 
       properties: {
 
@@ -10476,7 +10615,7 @@ Polymer.Debounce = (function() {
         this._selection.setItemSelected(this._valueToItem(value), unselected);
       }
 
-    }
+    }, Polymer.IronSelectableBehavior
   ];
 
 </script>
@@ -13147,6 +13286,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 :host {
   display: block;
+  --paper-toolbar-background: #42A5F5;
 }
 
 .nav {
@@ -13158,10 +13298,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 .main-panel [drawer] {
   height: 100%;
   background-color: #fafafa;
-}
-
-paper-toolbar {
-  --paper-toolbar-background: #42A5F5;
 }
 
 .list {
