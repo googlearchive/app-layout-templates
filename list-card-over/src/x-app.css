@@ -11,19 +11,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   display: block;
 }
 
-.nav {
-  height: 100%;
-  background-color: #fff;
-  border-right: 1px solid #ccc;
-}
-
 .list-panel {
   height: 100%;
-  background-color: #fafafa;
+  background-color: #fff;
 }
 
-.content-panel {
+.main-panel {
   height: 100%;
+  background-color: #eee;
 }
 
 paper-toolbar {
@@ -41,11 +36,22 @@ paper-toolbar {
   background-color: #fafafa;
 }
 
-
-.main-drawer-panel:not([narrow]) [list-toggle] {
-  display: none;
+.main-panel[mode=cover] .content {
+  padding: 0 64px 0 4px;
 }
 
-.content {
-  height: 3000px;
+.main-panel[mode=cover] {
+  --paper-header-panel-container: {
+    left: 64px !important;
+  };
+}
+
+paper-material {
+  height: 1400px;
+  background-color: #fff;
+}
+
+.main-panel[mode=cover] paper-material {
+  max-width: 640px;
+  margin: 64px auto;
 }

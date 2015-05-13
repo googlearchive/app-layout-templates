@@ -55,7 +55,7 @@ Displays a page on different device layouts.
         </template>
       </select>
 
-      <a href="{{source.link}}" target="_blank" hidden="{{!source.link}}"><h4>Github Link</h4></a>
+      <a href="{{source.github}}" target="_blank" hidden$="{{!source.github}}"><h4>Github Link</h4></a>
 
       <h4>Device View</h4>
       <iron-selector class="device-select" selected="{{device}}" selected-item="{{deviceIcon}}"

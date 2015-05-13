@@ -7,11 +7,10 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../../../iron-icons/iron-icons.html">
 
 <link rel="import" href="../../../paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../../paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../paper-item/paper-item.html">
 <link rel="import" href="../../../paper-menu/paper-menu.html">
@@ -23,23 +22,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
-    <paper-drawer-panel id="navPanel" responsive-width="1280px">
+    <paper-drawer-panel id="navDrawerPanel" responsive-width="1280px">
 
       <div class="nav" drawer on-tap="_navTap">
         <!-- Nav Content -->
       </div>
 
-      <paper-drawer-panel id="mainPanel" class="main-panel" main responsive-width="600px"
+      <paper-drawer-panel id="mainDrawerPanel" class="main-drawer-panel" main responsive-width="600px"
           drawer-width="[[_computeListWidth(_isMobile)]]" drawer-toggle-attribute="list-toggle"
           narrow="{{_isMobile}}">
 
-        <div class="vertical layout" drawer>
+        <paper-header-panel class="list-panel" drawer>
 
           <paper-toolbar>
             <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
           </paper-toolbar>
 
-          <paper-menu class="list flex scroll" on-iron-activate="_listTap">
+          <!-- List -->
+          <paper-menu class="list" on-iron-activate="_listTap">
             <paper-item></paper-item>
             <paper-item></paper-item>
             <paper-item></paper-item>
@@ -62,19 +62,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-item></paper-item>
           </paper-menu>
 
-        </div>
+        </paper-header-panel>
 
-        <div class="vertical layout" main>
+        <paper-header-panel class="content-panel" main>
 
           <paper-toolbar>
             <paper-icon-button icon="arrow-back" list-toggle></paper-icon-button>
           </paper-toolbar>
 
-          <div class="detail flex">
-            <!-- Main Content -->
-          </div>
+          <!-- Main Content -->
+          <div class="content"></div>
 
-        </div>
+        </paper-header-panel>
 
       </paper-drawer-panel>
 
@@ -94,11 +93,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _listTap: function() {
-        this.$.mainPanel.closeDrawer();
+        this.$.mainDrawerPanel.closeDrawer();
       },
 
       _navTap: function() {
-        this.$.navPanel.closeDrawer();
+        this.$.navDrawerPanel.closeDrawer();
       }
 
     });

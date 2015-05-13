@@ -9,7 +9,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 :host {
   display: block;
-  --paper-toolbar-background: #42A5F5;
 }
 
 .nav {
@@ -21,6 +20,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 .main {
   height: 100%;
   background-color: #eee;
+}
+
+paper-toolbar {
+  --paper-toolbar-background: #42A5F5;
 }
 
 .content {
