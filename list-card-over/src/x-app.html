@@ -24,7 +24,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
-    <paper-drawer-panel id="drawerPanel" responsive-width="1024px" drawer-width="320px">
+    <paper-drawer-panel id="drawerPanel" responsive-width="1024px" drawer-width="{{drawerWidth}}">
 
       <paper-header-panel class="list-panel" drawer mode="seamed">
 
@@ -63,9 +63,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </paper-toolbar>
 
         <div class="content">
+
           <paper-material>
             <!-- Card Content -->
           </paper-material>
+
         </div>
 
       </paper-header-panel>
@@ -97,6 +99,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _isMobileChanged: function(isMobile) {
         this.mainMode = isMobile ? 'seamed' : 'cover';
+        this.drawerWidth = isMobile ? '100%' : '320px';
         this.toolbarClass = isMobile ? '' : 'tall';
         this.updateStyles();
       }
