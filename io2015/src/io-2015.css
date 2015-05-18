@@ -1,0 +1,322 @@
+/*
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
+:host {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.nav {
+  height: 100%;
+  background-color: #fff;
+}
+
+.main {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.header {
+  position: relative;
+  height: 540px;
+}
+
+paper-toolbar {
+  --paper-toolbar-background: transparent;
+}
+
+.nav-toolbar {
+  padding-left: 16px;
+}
+
+.bg-cyan {
+  background-color: #00BCD4;
+  --paper-toolbar-background: #00BCD4;
+  color: #07434D;
+}
+
+.tabs {
+  width: 430px;
+  --paper-tabs-selection-bar: {
+    background-color: #E5E8E9;
+  };
+}
+
+.tabs paper-tab {
+  cursor: pointer;
+  --paper-tab-ripple: {
+    color: #E5E8E9;
+  };
+  --paper-tab-unselected-content: {
+    opacity: 1;
+  };
+}
+
+.event-fab {
+  position: absolute;
+  right: 32px;
+  bottom: -28px;
+  z-index: 1;
+  background-color: #fff;
+  color: #616161;
+}
+
+.signin {
+  font-size: 14px;
+}
+
+h1 {
+  padding: 0;
+  margin-bottom: 9px;
+  margin: 0;
+  letter-spacing: -0.04em;
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 56px;
+}
+
+h3 {
+  margin: 0;
+  padding: 0;
+  color: #5c5c5c;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+.link {
+  font-size: 14px;
+  color: #008094;
+  cursor: pointer;
+}
+
+.card-content {
+  padding: 32px 40px;
+  color: #212121;
+}
+
+.card-content:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+paper-material {
+  margin: 0 0 16px;
+  background: #fff;
+}
+
+.page-header {
+  position: absolute;
+  right: 0;
+  bottom: 150px;
+  left: 0;
+}
+
+.card-container {
+  position: absolute;
+  top: -120px;
+  right: 0;
+  left: 0;
+}
+
+.card-title {
+  padding-bottom: 24px;
+}
+
+.center-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.center-container.horizontal {
+  @apply(--layout-horizontal);
+}
+
+.center-container.horizontal > * {
+  @apply(--layout-flex);
+}
+
+.center-container.horizontal > *:not(:last-child) {
+  margin-right: 32px;
+}
+
+schedule-item {
+  margin-bottom: 24px;
+}
+
+.default-page-content {
+  height: 800px;
+  @apply(--layout-horizontal);
+  @apply(--layout-center-center);
+}
+
+.default-page-content {
+  height: 800px;
+  @apply(--layout-horizontal);
+  @apply(--layout-center-center);
+}
+
+/* backgrounds and logo */
+
+.io-logo {
+  background: url('../assets/io-logo@2x.png') no-repeat;
+  background-size: contain;
+  height: 40px;
+  width: 60px;
+  cursor: pointer;
+}
+
+.io-hash {
+  background: url('../assets/io15-hash-on-blue-solid.png') no-repeat 50% 50%;
+  background-size: contain;
+  height: 160px;
+  width: 100%;
+}
+
+.page-bg {
+  background-position: 100% 0;
+  background-size: cover;
+  height: 980px;
+}
+
+.home-page-bg {
+  height: 780px;
+  background-image: url(../assets/Image-01.jpg);
+}
+
+.home-page-bg2 {
+  height: 680px;
+  background-color: #455A64;
+  background-position: 50% 0%;
+  background-image: url(../assets/globe.png);
+}
+
+.about-page-bg {
+  background-image: url(../assets/Image-01@2x.jpg);
+}
+
+.onsite-page-bg {
+  background-image: url(../assets/Image-05.jpg);
+}
+
+.offsite-page-bg {
+  background-image: url(../assets/stage-887@2x.jpg);
+}
+
+/* themes */
+
+.theme-bg {
+  background-color: #00BCD4;
+  color: #004446;
+}
+
+[page='1'] .theme-bg,
+[page='3'] .theme-bg {
+  background-color: #455A64;
+  color: #E5E8E9;
+}
+
+/* responsive */
+
+@media (min-width: 769px) {
+
+  .menu-button {
+    display: none;
+  }
+
+}
+
+@media (min-width: 1137px) {
+
+  h3 {
+    font-size: 24px;
+  }
+
+  .center-container {
+    max-width: 900px;
+  }
+
+}
+
+@media (max-width: 900px) {
+
+  .center-container {
+    max-width: 580px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .main-toolbar .io-logo,
+  .main-toolbar .tabs {
+    display: none;
+  }
+
+  .header {
+    height: 420px;
+  }
+
+  .page-header {
+    padding: 0 16px;
+  }
+
+  h1 {
+    font-size: 34px;
+  }
+
+  h3 {
+    font-size: 16px;
+  }
+
+  .card-content {
+    padding: 24px 16px;
+  }
+
+  .event-fab {
+    right: 16px;
+    bottom: 92px;
+  }
+
+  .center-container {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+  }
+
+  .center-container.horizontal {
+    @apply(--layout-vertical);
+  }
+
+  .center-container.horizontal > *:not(:last-child) {
+    margin-right: 0;
+  }
+
+  .page-bg {
+    height: 480px;
+  }
+
+  .default-page-content {
+    height: 400px;
+  }
+
+}
+
+@media (max-width: 639px) {
+
+  paper-toolbar {
+    padding: 0 8px;
+  }
+
+}
