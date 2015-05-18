@@ -471,52 +471,6 @@ To position the drawer to the right, add `rightDrawer` attribute.
 @element paper-drawer-panel
 @homepage github.io
 --><!--
-`iron-selector` is an element which can be used to manage a list of elements
-that can be selected.  Tapping on the item will make the item selected.  The `selected` indicates
-which item is being selected.  The default is to use the index of the item.
-
-Example:
-
-    <iron-selector selected="0">
-      <div>Item 1</div>
-      <div>Item 2</div>
-      <div>Item 3</div>
-    </iron-selector>
-
-If you want to use the attribute value of an element for `selected` instead of the index,
-set `attrForSelected` to the name of the attribute.  For example, if you want to select item by
-`name`, set `attrForSelected` to `name`.
-
-Example:
-
-    <iron-selector attr-for-selected="name" selected="foo">
-      <div name="foo">Foo</div>
-      <div name="bar">Bar</div>
-      <div name="zot">Zot</div>
-    </iron-selector>
-
-`iron-selector` is not styled. Use the `iron-selected` CSS class to style the selected element.
-
-Example:
-
-    <style>
-      .iron-selected {
-        background: #eee;
-      }
-    </style>
-
-    ...
-
-    <iron-selector selected="0">
-      <div>Item 1</div>
-      <div>Item 2</div>
-      <div>Item 3</div>
-    </iron-selector>
-
-@group Polymer Core Elements
-@element iron-selector
-@homepage github.io
---><!--
 `paper-header-panel` contains a header section and a content panel section.
 
 __Important:__ The `paper-header-panel` will not display if its parent does not have a height.
@@ -573,9 +527,25 @@ To have the content fit to the main area, use the `fit` class.
 
 Use `mode` to control the header and scrolling behavior.
 
-@group Polymer Core Elements
-@element paper-header-panel
-@homepage github.io
+Styling header panel:
+
+To change the shadow that shows up underneath the header:
+
+    paper-header-panel {
+      --paper-header-panel-shadow: {
+          height: 6px;
+          bottom: -6px;
+          box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+      };
+    }
+
+To change the panel container:
+
+    paper-slider {
+      --paper-header-panel-standard-container: {
+        border: 1px solid gray;
+      };
+    }
 --><!--
 `paper-ripple` provides a visual effect that other paper elements can
 use to simulate a rippling effect emanating from the point of contact.  The
@@ -6722,9 +6692,9 @@ TODO(sjmiles): this module should produce either syntactic metadata
         } else if (ta === 'none') {
           prevent = true;
         } else if (ta === 'pan-x') {
-          prevent = dx >= dy;
-        } else if (ta === 'pan-y') {
           prevent = dy > dx;
+        } else if (ta === 'pan-y') {
+          prevent = dx > dy;
         }
         if (prevent) {
           ev.preventDefault();
@@ -7698,6 +7668,9 @@ Polymer.Debounce = (function() {
         var computedHost = this._rootDataHost || this;
         var computedvalue =
           computedHost[effect.method].apply(computedHost, args);
+        if (effect.negate) {
+          computedvalue = !computedvalue;
+        }
         this._applyEffectValue(computedvalue, effect);
       }
     },
@@ -7897,7 +7870,8 @@ Polymer.Debounce = (function() {
           args: sig.args,
           arg: arg,
           property: note.name,
-          index: index
+          index: index,
+          negate: note.negate
         });
       }, this);
     },
@@ -11782,10 +11756,8 @@ Polymer.Debounce = (function() {
       // install new svg element
       var svg = this._cloneIcon(iconName);
       if (svg) {
-        // TODO(sjmiles): I know, `with` is the devil ... except it isn't
-        with (Polymer.dom(element)) {
-          insertBefore(svg, childNodes[0]);
-        }
+        var pde = Polymer.dom(element);
+        pde.insertBefore(svg, pde.childNodes[0]);
         return element._svgIcon = svg;
       }
     },
@@ -11976,6 +11948,7 @@ Polymer.Debounce = (function() {
 </script>
 <script>
 
+  /** @behavior */
   Polymer.IronSelectableBehavior = {
 
     properties: {
@@ -12160,6 +12133,7 @@ Polymer.Debounce = (function() {
 
     _updateSelected: function() {
       this._selectSelected(this.selected);
+      this._selectionChange();
     },
 
     _selectSelected: function(selected) {
@@ -12208,7 +12182,6 @@ Polymer.Debounce = (function() {
       if (this.selectedAttribute) {
         this.toggleAttribute(this.selectedAttribute, isSelected, item);
       }
-      this._selectionChange();
       this.fire('iron-' + (isSelected ? 'select' : 'deselect'), {item: item});
     },
 
@@ -12264,6 +12237,7 @@ Polymer.Debounce = (function() {
 </script>
 <script>
 
+  /** @behavior */
   Polymer.IronMultiSelectableBehavior = [
     {
 
@@ -12341,6 +12315,7 @@ Polymer.Debounce = (function() {
         } else {
           this._selectSelected(this.selected);
         }
+        this._selectionChange();
       },
 
       _selectMulti: function(values) {
@@ -12378,6 +12353,50 @@ Polymer.Debounce = (function() {
 
 </script>
 <script>
+  /**
+  `iron-selector` is an element which can be used to manage a list of elements
+  that can be selected.  Tapping on the item will make the item selected.  The `selected` indicates
+  which item is being selected.  The default is to use the index of the item.
+
+  Example:
+
+      <iron-selector selected="0">
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+      </iron-selector>
+
+  If you want to use the attribute value of an element for `selected` instead of the index,
+  set `attrForSelected` to the name of the attribute.  For example, if you want to select item by
+  `name`, set `attrForSelected` to `name`.
+
+  Example:
+
+      <iron-selector attr-for-selected="name" selected="foo">
+        <div name="foo">Foo</div>
+        <div name="bar">Bar</div>
+        <div name="zot">Zot</div>
+      </iron-selector>
+
+  `iron-selector` is not styled. Use the `iron-selected` CSS class to style the selected element.
+
+  Example:
+
+      <style>
+        .iron-selected {
+          background: #eee;
+        }
+      </style>
+
+      ...
+
+      <iron-selector selected="0">
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+      </iron-selector>
+
+  */
 
   Polymer({
 
@@ -12391,6 +12410,317 @@ Polymer.Debounce = (function() {
 
 </script>
 
+
+
+
+<style is="custom-style">
+  * {
+    /**
+     * Default paper header panel shadow
+     */
+    --paper-header-panel-shadow: {
+      height: 6px;
+      bottom: -6px;
+      box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+    };
+  }
+</style>
+
+<style is="custom-style">
+
+  :root {
+
+    --dark-primary-color: #303f9f;
+
+    --default-primary-color: #3f51b5;
+
+    --light-primary-color: #c5cae9;
+
+    --text-primary-color: #ffffff;
+
+    --accent-color: #ff4081;
+
+    --primary-background-color: #ffffff;
+
+    --primary-text-color: #212121;
+
+    --secondary-text-color: #757575;
+
+    --disabled-text-color: #bdbdbd;
+
+    --divider-color: #e0e0e0;
+
+  }
+
+</style>
+<script>
+
+  Polymer.IronControlState = {
+
+    properties: {
+
+      /**
+       * If true, the element currently has focus.
+       *
+       * @attribute focused
+       * @type boolean
+       * @default false
+       */
+      focused: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        readOnly: true,
+        reflectToAttribute: true
+      },
+
+      /**
+       * If true, the user cannot interact with this element.
+       *
+       * @attribute disabled
+       * @type boolean
+       * @default false
+       */
+      disabled: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: '_disabledChanged',
+        reflectToAttribute: true
+      },
+
+      _oldTabIndex: {
+        type: Number
+      }
+    },
+
+    observers: [
+      '_changedControlState(focused, disabled)'
+    ],
+
+    listeners: {
+      focus: '_focusHandler',
+      blur: '_blurHandler'
+    },
+
+    ready: function() {
+      // TODO(sjmiles): ensure read-only property is valued so the compound
+      // observer will fire
+      if (this.focused === undefined) {
+        this._setFocused(false);
+      }
+    },
+
+    _focusHandler: function() {
+      this._setFocused(true);
+    },
+
+    _blurHandler: function() {
+      this._setFocused(false);
+    },
+
+    _disabledChanged: function(disabled, old) {
+      this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+      this.style.pointerEvents = disabled ? 'none' : '';
+      if (disabled) {
+        this._oldTabIndex = this.tabIndex;
+        this.focused = false;
+        this.tabIndex = -1;
+      } else if (this._oldTabIndex !== undefined) {
+        this.tabIndex = this._oldTabIndex;
+      }
+    },
+
+    _changedControlState: function() {
+      // _controlStateChanged is abstract, follow-on behaviors may implement it
+      if (this._controlStateChanged) {
+        this._controlStateChanged();
+      }
+    }
+
+  };
+
+</script>
+<script>
+
+  Polymer.IronButtonState = {
+
+    properties: {
+
+      /**
+       * If true, the user is currently holding down the button.
+       *
+       * @attribute pressed
+       * @type boolean
+       * @default false
+       */
+      pressed: {
+        type: Boolean,
+        readOnly: true,
+        reflectToAttribute: true,
+        observer: '_pressedChanged'
+      },
+
+      /**
+       * If true, the button toggles the active state with each tap or press
+       * of the spacebar.
+       *
+       * @attribute toggles
+       * @type boolean
+       * @default false
+       */
+      toggles: {
+        type: Boolean,
+        reflectToAttribute: true
+      },
+
+      /**
+       * If true, the button is a toggle and is currently in the active state.
+       *
+       * @attribute active
+       * @type boolean
+       * @default false
+       */
+      active: {
+        type: Boolean,
+        notify: true,
+        reflectToAttribute: true,
+        observer: '_activeChanged'
+      }
+
+    },
+
+    listeners: {
+      down: '_downHandler',
+      up: '_upHandler',
+      keydown: '_keyDownHandler',
+      keyup: '_keyUpHandler',
+      tap: '_tapHandler'
+    },
+
+    _tapHandler: function() {
+      if (this.toggles) {
+       // a tap is needed to toggle the active state
+        this._userActivate(!this.active);
+      } else {
+        this.active = false;
+      }
+    },
+
+    // to emulate native checkbox, (de-)activations from a user interaction fire
+    // 'change' events
+    _userActivate: function(active) {
+      this.active = active;
+      this.fire('change');
+    },
+
+    _downHandler: function() {
+      this._setPressed(true);
+    },
+
+    _upHandler: function(e) {
+      this._setPressed(false);
+    },
+
+    _keyDownHandler: function(e) {
+      switch(e.keyCode) {
+        case this.keyCodes.ENTER_KEY:
+          this._asyncClick();
+          break;
+
+        case this.keyCodes.SPACE:
+          this._setPressed(true);
+          break;
+
+      }
+    },
+
+    _keyUpHandler: function(e) {
+     if (e.keyCode == this.keyCodes.SPACE) {
+        if (this.pressed) {
+          this._asyncClick();
+        }
+        this._setPressed(false);
+      }
+    },
+
+    // trigger click asynchronously, the asynchrony is useful to allow one
+    // event handler to unwind before triggering another event
+    _asyncClick: function() {
+      this.async(function() {
+        this.click();
+      }, 1);
+    },
+
+    // any of these changes are considered a change to button state
+
+    _pressedChanged: function(pressed) {
+      this._changedButtonState();
+    },
+
+    _activeChanged: function(active) {
+      this.setAttribute('aria-pressed', active ? 'true' : 'false');
+      this._changedButtonState();
+    },
+
+    _controlStateChanged: function() {
+      if (this.disabled) {
+        this._setPressed(false);
+        this.active = false;
+      } else {
+        this._changedButtonState();
+      }
+    },
+
+    // provide hook for follow-on behaviors to react to button-state
+
+    _changedButtonState: function() {
+      if (this._buttonStateChanged) {
+        this._buttonStateChanged(); // abstract
+      }
+    }
+
+  };
+
+</script>
+<script>
+
+  Polymer.PaperButtonElevation = {
+
+    properties: {
+
+      _elevation: {
+        type: Number
+      }
+
+    },
+
+    _calculateElevation: function() {
+      var e = 1;
+      if (this.disabled || !this.raised) {
+        e = 0;
+      } else if (this.active || this.pressed) {
+        e = 2;
+      } else if (this.focused) {
+        e = 3;
+      }
+      this._elevation = e;
+    }
+
+  };
+
+  Polymer.PaperButtonBehavior = [
+    Polymer.IronControlState,
+    Polymer.IronButtonState,
+    Polymer.PaperButtonElevation
+  ];
+
+</script>
+<style is="custom-style">
+  * {
+    --paper-icon-button-disabled-text: var(--disabled-text-color);
+  }
+</style>
 
 <style>
 
@@ -12980,327 +13310,11 @@ Polymer.Debounce = (function() {
   }
 
 </style>
-
-
-<style is="custom-style">
-  * {
-    /**
-     * Default paper header panel shadow
-     */
-    --paper-header-panel-shadow: {
-      height: 6px;
-      bottom: -6px;
-      box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
-    };
-
-    /**
-     * Custom properties for the main container
-     */
-    --paper-header-panel-container: {
-
-    };
-  }
-</style>
-
 <style is="custom-style">
 
   :root {
 
-    --dark-primary-color: #303f9f;
-
-    --default-primary-color: #3f51b5;
-
-    --light-primary-color: #c5cae9;
-
-    --text-primary-color: #ffffff;
-
-    --accent-color: #ff4081;
-
-    --primary-background-color: #ffffff;
-
-    --primary-text-color: #212121;
-
-    --secondary-text-color: #757575;
-
-    --disabled-text-color: #bdbdbd;
-
-    --divider-color: #e0e0e0;
-
-  }
-
-</style>
-<script>
-
-  Polymer.IronControlState = {
-
-    properties: {
-
-      /**
-       * If true, the element currently has focus.
-       *
-       * @attribute focused
-       * @type boolean
-       * @default false
-       */
-      focused: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        readOnly: true,
-        reflectToAttribute: true
-      },
-
-      /**
-       * If true, the user cannot interact with this element.
-       *
-       * @attribute disabled
-       * @type boolean
-       * @default false
-       */
-      disabled: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: '_disabledChanged',
-        reflectToAttribute: true
-      },
-
-      _oldTabIndex: {
-        type: Number
-      }
-    },
-
-    observers: [
-      '_changedControlState(focused, disabled)'
-    ],
-
-    listeners: {
-      focus: '_focusHandler',
-      blur: '_blurHandler'
-    },
-
-    ready: function() {
-      // TODO(sjmiles): ensure read-only property is valued so the compound
-      // observer will fire
-      if (this.focused === undefined) {
-        this._setFocused(false);
-      }
-    },
-
-    _focusHandler: function() {
-      this._setFocused(true);
-    },
-
-    _blurHandler: function() {
-      this._setFocused(false);
-    },
-
-    _disabledChanged: function(disabled, old) {
-      this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-      this.style.pointerEvents = disabled ? 'none' : '';
-      if (disabled) {
-        this._oldTabIndex = this.tabIndex;
-        this.focused = false;
-        this.tabIndex = -1;
-      } else if (this._oldTabIndex !== undefined) {
-        this.tabIndex = this._oldTabIndex;
-      }
-    },
-
-    _changedControlState: function() {
-      // _controlStateChanged is abstract, follow-on behaviors may implement it
-      if (this._controlStateChanged) {
-        this._controlStateChanged();
-      }
-    }
-
-  };
-
-</script>
-<script>
-
-  Polymer.IronButtonState = {
-
-    properties: {
-
-      /**
-       * If true, the user is currently holding down the button.
-       *
-       * @attribute pressed
-       * @type boolean
-       * @default false
-       */
-      pressed: {
-        type: Boolean,
-        readOnly: true,
-        reflectToAttribute: true,
-        observer: '_pressedChanged'
-      },
-
-      /**
-       * If true, the button toggles the active state with each tap or press
-       * of the spacebar.
-       *
-       * @attribute toggles
-       * @type boolean
-       * @default false
-       */
-      toggles: {
-        type: Boolean,
-        reflectToAttribute: true
-      },
-
-      /**
-       * If true, the button is a toggle and is currently in the active state.
-       *
-       * @attribute active
-       * @type boolean
-       * @default false
-       */
-      active: {
-        type: Boolean,
-        notify: true,
-        reflectToAttribute: true,
-        observer: '_activeChanged'
-      }
-
-    },
-
-    listeners: {
-      down: '_downHandler',
-      up: '_upHandler',
-      keydown: '_keyDownHandler',
-      keyup: '_keyUpHandler',
-      tap: '_tapHandler'
-    },
-
-    _tapHandler: function() {
-      if (this.toggles) {
-       // a tap is needed to toggle the active state
-        this._userActivate(!this.active);
-      } else {
-        this.active = false;
-      }
-    },
-
-    // to emulate native checkbox, (de-)activations from a user interaction fire
-    // 'change' events
-    _userActivate: function(active) {
-      this.active = active;
-      this.fire('change');
-    },
-
-    _downHandler: function() {
-      this._setPressed(true);
-    },
-
-    _upHandler: function(e) {
-      this._setPressed(false);
-    },
-
-    _keyDownHandler: function(e) {
-      switch(e.keyCode) {
-        case this.keyCodes.ENTER_KEY:
-          this._asyncClick();
-          break;
-
-        case this.keyCodes.SPACE:
-          this._setPressed(true);
-          break;
-
-      }
-    },
-
-    _keyUpHandler: function(e) {
-     if (e.keyCode == this.keyCodes.SPACE) {
-        if (this.pressed) {
-          this._asyncClick();
-        }
-        this._setPressed(false);
-      }
-    },
-
-    // trigger click asynchronously, the asynchrony is useful to allow one
-    // event handler to unwind before triggering another event
-    _asyncClick: function() {
-      this.async(function() {
-        this.click();
-      }, 1);
-    },
-
-    // any of these changes are considered a change to button state
-
-    _pressedChanged: function(pressed) {
-      this._changedButtonState();
-    },
-
-    _activeChanged: function(active) {
-      this.setAttribute('aria-pressed', active ? 'true' : 'false');
-      this._changedButtonState();
-    },
-
-    _controlStateChanged: function() {
-      if (this.disabled) {
-        this._setPressed(false);
-        this.active = false;
-      } else {
-        this._changedButtonState();
-      }
-    },
-
-    // provide hook for follow-on behaviors to react to button-state
-
-    _changedButtonState: function() {
-      if (this._buttonStateChanged) {
-        this._buttonStateChanged(); // abstract
-      }
-    }
-
-  };
-
-</script>
-<script>
-
-  Polymer.PaperButtonElevation = {
-
-    properties: {
-
-      _elevation: {
-        type: Number
-      }
-
-    },
-
-    _calculateElevation: function() {
-      var e = 1;
-      if (this.disabled || !this.raised) {
-        e = 0;
-      } else if (this.active || this.pressed) {
-        e = 2;
-      } else if (this.focused) {
-        e = 3;
-      }
-      this._elevation = e;
-    }
-
-  };
-
-  Polymer.PaperButtonBehavior = [
-    Polymer.IronControlState,
-    Polymer.IronButtonState,
-    Polymer.PaperButtonElevation
-  ];
-
-</script>
-<style is="custom-style">
-  * {
-    --paper-icon-button-disabled-text: var(--disabled-text-color);
-  }
-</style>
-
-<style is="custom-style">
-
-  :root {
+    /* Material Design color palette for Google products */
 
     --google-red-100: #f4c7c3;
     --google-red-300: #e67c73;
@@ -13326,6 +13340,281 @@ Polymer.Debounce = (function() {
     --google-grey-300: #e0e0e0;
     --google-grey-500: #9e9e9e;
     --google-grey-700: #616161;
+    
+    /* Material Design color palette from online spec document */
+
+    --paper-red-50: #ffebee;
+    --paper-red-100: #ffcdd2;
+    --paper-red-200: #ef9a9a;
+    --paper-red-300: #e57373;
+    --paper-red-400: #ef5350;
+    --paper-red-500: #f44336;
+    --paper-red-600: #e53935;
+    --paper-red-700: #d32f2f;
+    --paper-red-800: #c62828;
+    --paper-red-900: #b71c1c;
+    --paper-red-a100: #ff8a80;
+    --paper-red-a200: #ff5252;
+    --paper-red-a400: #ff1744;
+    --paper-red-a700: #d50000;
+ 
+    --paper-pink-50: #fce4ec;
+    --paper-pink-100: #f8bbd0;
+    --paper-pink-200: #f48fb1;
+    --paper-pink-300: #f06292;
+    --paper-pink-400: #ec407a;
+    --paper-pink-500: #e91e63;
+    --paper-pink-600: #d81b60;
+    --paper-pink-700: #c2185b;
+    --paper-pink-800: #ad1457;
+    --paper-pink-900: #880e4f;
+    --paper-pink-a100: #ff80ab;
+    --paper-pink-a200: #ff4081;
+    --paper-pink-a400: #f50057;
+    --paper-pink-a700: #c51162;
+ 
+    --paper-purple-50: #f3e5f5;
+    --paper-purple-100: #e1bee7;
+    --paper-purple-200: #ce93d8;
+    --paper-purple-300: #ba68c8;
+    --paper-purple-400: #ab47bc;
+    --paper-purple-500: #9c27b0;
+    --paper-purple-600: #8e24aa;
+    --paper-purple-700: #7b1fa2;
+    --paper-purple-800: #6a1b9a;
+    --paper-purple-900: #4a148c;
+    --paper-purple-a100: #ea80fc;
+    --paper-purple-a200: #e040fb;
+    --paper-purple-a400: #d500f9;
+    --paper-purple-a700: #aa00ff;
+ 
+    --paper-deep-purple-50: #ede7f6;
+    --paper-deep-purple-100: #d1c4e9;
+    --paper-deep-purple-200: #b39ddb;
+    --paper-deep-purple-300: #9575cd;
+    --paper-deep-purple-400: #7e57c2;
+    --paper-deep-purple-500: #673ab7;
+    --paper-deep-purple-600: #5e35b1;
+    --paper-deep-purple-700: #512da8;
+    --paper-deep-purple-800: #4527a0;
+    --paper-deep-purple-900: #311b92;
+    --paper-deep-purple-a100: #b388ff;
+    --paper-deep-purple-a200: #7c4dff;
+    --paper-deep-purple-a400: #651fff;
+    --paper-deep-purple-a700: #6200ea;
+ 
+    --paper-indigo-50: #e8eaf6;
+    --paper-indigo-100: #c5cae9;
+    --paper-indigo-200: #9fa8da;
+    --paper-indigo-300: #7986cb;
+    --paper-indigo-400: #5c6bc0;
+    --paper-indigo-500: #3f51b5;
+    --paper-indigo-600: #3949ab;
+    --paper-indigo-700: #303f9f;
+    --paper-indigo-800: #283593;
+    --paper-indigo-900: #1a237e;
+    --paper-indigo-a100: #8c9eff;
+    --paper-indigo-a200: #536dfe;
+    --paper-indigo-a400: #3d5afe;
+    --paper-indigo-a700: #304ffe;
+ 
+    --paper-blue-50: #e3f2fd;
+    --paper-blue-100: #bbdefb;
+    --paper-blue-200: #90caf9;
+    --paper-blue-300: #64b5f6;
+    --paper-blue-400: #42a5f5;
+    --paper-blue-500: #2196f3;
+    --paper-blue-600: #1e88e5;
+    --paper-blue-700: #1976d2;
+    --paper-blue-800: #1565c0;
+    --paper-blue-900: #0d47a1;
+    --paper-blue-a100: #82b1ff;
+    --paper-blue-a200: #448aff;
+    --paper-blue-a400: #2979ff;
+    --paper-blue-a700: #2962ff;
+ 
+    --paper-light-blue-50: #e1f5fe;
+    --paper-light-blue-100: #b3e5fc;
+    --paper-light-blue-200: #81d4fa;
+    --paper-light-blue-300: #4fc3f7;
+    --paper-light-blue-400: #29b6f6;
+    --paper-light-blue-500: #03a9f4;
+    --paper-light-blue-600: #039be5;
+    --paper-light-blue-700: #0288d1;
+    --paper-light-blue-800: #0277bd;
+    --paper-light-blue-900: #01579b;
+    --paper-light-blue-a100: #80d8ff;
+    --paper-light-blue-a200: #40c4ff;
+    --paper-light-blue-a400: #00b0ff;
+    --paper-light-blue-a700: #0091ea;
+ 
+    --paper-cyan-50: #e0f7fa;
+    --paper-cyan-100: #b2ebf2;
+    --paper-cyan-200: #80deea;
+    --paper-cyan-300: #4dd0e1;
+    --paper-cyan-400: #26c6da;
+    --paper-cyan-500: #00bcd4;
+    --paper-cyan-600: #00acc1;
+    --paper-cyan-700: #0097a7;
+    --paper-cyan-800: #00838f;
+    --paper-cyan-900: #006064;
+    --paper-cyan-a100: #84ffff;
+    --paper-cyan-a200: #18ffff;
+    --paper-cyan-a400: #00e5ff;
+    --paper-cyan-a700: #00b8d4;
+ 
+    --paper-teal-50: #e0f2f1;
+    --paper-teal-100: #b2dfdb;
+    --paper-teal-200: #80cbc4;
+    --paper-teal-300: #4db6ac;
+    --paper-teal-400: #26a69a;
+    --paper-teal-500: #009688;
+    --paper-teal-600: #00897b;
+    --paper-teal-700: #00796b;
+    --paper-teal-800: #00695c;
+    --paper-teal-900: #004d40;
+    --paper-teal-a100: #a7ffeb;
+    --paper-teal-a200: #64ffda;
+    --paper-teal-a400: #1de9b6;
+    --paper-teal-a700: #00bfa5;
+ 
+    --paper-green-50: #e8f5e9;
+    --paper-green-100: #c8e6c9;
+    --paper-green-200: #a5d6a7;
+    --paper-green-300: #81c784;
+    --paper-green-400: #66bb6a;
+    --paper-green-500: #4caf50;
+    --paper-green-600: #43a047;
+    --paper-green-700: #388e3c;
+    --paper-green-800: #2e7d32;
+    --paper-green-900: #1b5e20;
+    --paper-green-a100: #b9f6ca;
+    --paper-green-a200: #69f0ae;
+    --paper-green-a400: #00e676;
+    --paper-green-a700: #00c853;
+ 
+    --paper-light-green-50: #f1f8e9;
+    --paper-light-green-100: #dcedc8;
+    --paper-light-green-200: #c5e1a5;
+    --paper-light-green-300: #aed581;
+    --paper-light-green-400: #9ccc65;
+    --paper-light-green-500: #8bc34a;
+    --paper-light-green-600: #7cb342;
+    --paper-light-green-700: #689f38;
+    --paper-light-green-800: #558b2f;
+    --paper-light-green-900: #33691e;
+    --paper-light-green-a100: #ccff90;
+    --paper-light-green-a200: #b2ff59;
+    --paper-light-green-a400: #76ff03;
+    --paper-light-green-a700: #64dd17;
+ 
+    --paper-lime-50: #f9fbe7;
+    --paper-lime-100: #f0f4c3;
+    --paper-lime-200: #e6ee9c;
+    --paper-lime-300: #dce775;
+    --paper-lime-400: #d4e157;
+    --paper-lime-500: #cddc39;
+    --paper-lime-600: #c0ca33;
+    --paper-lime-700: #afb42b;
+    --paper-lime-800: #9e9d24;
+    --paper-lime-900: #827717;
+    --paper-lime-a100: #f4ff81;
+    --paper-lime-a200: #eeff41;
+    --paper-lime-a400: #c6ff00;
+    --paper-lime-a700: #aeea00;
+ 
+    --paper-yellow-50: #fffde7;
+    --paper-yellow-100: #fff9c4;
+    --paper-yellow-200: #fff59d;
+    --paper-yellow-300: #fff176;
+    --paper-yellow-400: #ffee58;
+    --paper-yellow-500: #ffeb3b;
+    --paper-yellow-600: #fdd835;
+    --paper-yellow-700: #fbc02d;
+    --paper-yellow-800: #f9a825;
+    --paper-yellow-900: #f57f17;
+    --paper-yellow-a100: #ffff8d;
+    --paper-yellow-a200: #ffff00;
+    --paper-yellow-a400: #ffea00;
+    --paper-yellow-a700: #ffd600;
+ 
+    --paper-amber-50: #fff8e1;
+    --paper-amber-100: #ffecb3;
+    --paper-amber-200: #ffe082;
+    --paper-amber-300: #ffd54f;
+    --paper-amber-400: #ffca28;
+    --paper-amber-500: #ffc107;
+    --paper-amber-600: #ffb300;
+    --paper-amber-700: #ffa000;
+    --paper-amber-800: #ff8f00;
+    --paper-amber-900: #ff6f00;
+    --paper-amber-a100: #ffe57f;
+    --paper-amber-a200: #ffd740;
+    --paper-amber-a400: #ffc400;
+    --paper-amber-a700: #ffab00;
+ 
+    --paper-orange-50: #fff3e0;
+    --paper-orange-100: #ffe0b2;
+    --paper-orange-200: #ffcc80;
+    --paper-orange-300: #ffb74d;
+    --paper-orange-400: #ffa726;
+    --paper-orange-500: #ff9800;
+    --paper-orange-600: #fb8c00;
+    --paper-orange-700: #f57c00;
+    --paper-orange-800: #ef6c00;
+    --paper-orange-900: #e65100;
+    --paper-orange-a100: #ffd180;
+    --paper-orange-a200: #ffab40;
+    --paper-orange-a400: #ff9100;
+    --paper-orange-a700: #ff6500;
+ 
+    --paper-deep-orange-50: #ff5722;
+    --paper-deep-orange-100: #fbe9e7;
+    --paper-deep-orange-200: #ffccbc;
+    --paper-deep-orange-300: #ff8a65;
+    --paper-deep-orange-400: #ff7043;
+    --paper-deep-orange-500: #ff5722;
+    --paper-deep-orange-600: #f4511e;
+    --paper-deep-orange-700: #e64a19;
+    --paper-deep-orange-800: #d84315;
+    --paper-deep-orange-900: #bf360c;
+    --paper-deep-orange-a100: #ff9e80;
+    --paper-deep-orange-a200: #ff6e40;
+    --paper-deep-orange-a400: #ff3d00;
+    --paper-deep-orange-a700: #dd2c00;
+ 
+    --paper-brown-50: #795548;
+    --paper-brown-100: #efebe9;
+    --paper-brown-200: #d7ccc8;
+    --paper-brown-300: #a1887f;
+    --paper-brown-400: #8d6e63;
+    --paper-brown-500: #795548;
+    --paper-brown-600: #6d4c41;
+    --paper-brown-700: #5d4037;
+    --paper-brown-800: #4e342e;
+    --paper-brown-900: #3e2723;
+ 
+    --paper-grey-50: #fafafa;
+    --paper-grey-100: #f5f5f5;
+    --paper-grey-200: #eeeeee;
+    --paper-grey-300: #e0e0e0;
+    --paper-grey-400: #bdbdbd;
+    --paper-grey-500: #9e9e9e;
+    --paper-grey-600: #757575;
+    --paper-grey-700: #616161;
+    --paper-grey-800: #424242;
+    --paper-grey-900: #212121;
+ 
+    --paper-blue-grey-50: #eceff1;
+    --paper-blue-grey-100: #cfd8dc;
+    --paper-blue-grey-200: #b0bec5;
+    --paper-blue-grey-300: #90a4ae;
+    --paper-blue-grey-400: #78909c;
+    --paper-blue-grey-500: #607d8b;
+    --paper-blue-grey-600: #546e7a;
+    --paper-blue-grey-700: #455a64;
+    --paper-blue-grey-800: #37474f;
+    --paper-blue-grey-900: #263238;
 
     /* opacity for dark text on a light background */
     --dark-divider-opacity: 12%;
@@ -13628,7 +13917,7 @@ Polymer.Debounce = (function() {
 
 <script>
 
-  Polymer.IronMenuBehavior = Polymer.IronMultiSelectableBehavior.concat({
+  Polymer.IronMenuBehavior = [{
 
     properties: {
 
@@ -13658,11 +13947,6 @@ Polymer.Debounce = (function() {
 
     },
 
-    observers: [
-      '_selectedItemsChanged(selectedItems)',
-      '_selectedItemChanged(selectedItem)'
-    ],
-
     hostAttributes: {
       'role': 'menu',
       'tabindex': '0'
@@ -13681,25 +13965,32 @@ Polymer.Debounce = (function() {
       }
     },
 
-    _selectedItemsChanged: function(selectedItems) {
-      this._setFocusedItem(selectedItems[0]);
-    },
-
-    _selectedItemChanged: function(selectedItem) {
-      this._setFocusedItem(selectedItem);
+    select: function(value) {
+      if (this._defaultFocusAsync) {
+        this.cancelAsync(this._defaultFocusAsync);
+        this._defaultFocusAsync = null;
+      }
+      var item = this._valueToItem(value);
+      this._setFocusedItem(item);
+      Polymer.IronMultiSelectableBehavior[0].select.call(this, value);
     },
 
     _onFocus: function(event) {
+      // do not focus the menu itself
+      this.blur();
       // clear the cached focus item
       this._setFocusedItem(null);
-      // focus the selected item when the menu receives focus, or the first item
-      // if no item is selected
-      var selectedItem = this.multi ? (this.selectedItems && this.selectedItems[0]) : this.selectedItem;
-      if (selectedItem) {
-        this._setFocusedItem(selectedItem);
-      } else {
-        this._setFocusedItem(this.items[0]);
-      }
+      this._defaultFocusAsync = this.async(function() {
+        // focus the selected item when the menu receives focus, or the first item
+        // if no item is selected
+        var selectedItem = this.multi ? (this.selectedItems && this.selectedItems[0]) : this.selectedItem;
+        if (selectedItem) {
+          this._setFocusedItem(selectedItem);
+        } else {
+          this._setFocusedItem(this.items[0]);
+        }
+      // async 100ms to wait for `select` to get called from `_itemActivate`
+      }, 100);
     },
 
     _onKeydown: function(event) {
@@ -13745,7 +14036,7 @@ Polymer.Debounce = (function() {
       this._setFocusedItem(this.items[index]);
     }
 
-  });
+  }].concat(Polymer.IronMultiSelectableBehavior);
 
 </script>
 
@@ -13762,7 +14053,7 @@ Polymer.Debounce = (function() {
 <style>
 
     body {
-      font-family: sans-serif;
+      font-family: 'Roboto', sans-serif;
       margin: 0;
     }
 
@@ -14125,6 +14416,8 @@ Polymer.Debounce = (function() {
       will-change: transform;
       box-sizing: border-box;
       -moz-box-sizing: border-box;
+
+      @apply(--paper-drawer-panel-drawer-container);
     }
 
     .transition > #drawer {
@@ -14155,6 +14448,8 @@ Polymer.Debounce = (function() {
       top: 0;
       right: 0;
       bottom: 0;
+
+      @apply(--paper-drawer-panel-main-container);
     }
 
     .transition > #main {
@@ -14179,10 +14474,10 @@ Polymer.Debounce = (function() {
       right: 0;
       bottom: 0;
       left: 0;
-      background-color: rgba(0, 0, 0, 0.3);
       visibility: hidden;
       opacity: 0;
       transition: opacity ease-in-out 0.38s, visibility ease-in-out 0.38s;
+      background-color: rgba(0, 0, 0, 0.3);
     }
 
     #edgeSwipeOverlay {
@@ -14198,9 +14493,6 @@ Polymer.Debounce = (function() {
       left: auto;
     }
 
-    /*
-    narrow layout
-    */
     .narrow-layout > #drawer.iron-selected {
       box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
     }
@@ -14236,9 +14528,9 @@ Polymer.Debounce = (function() {
     }
 
     .narrow-layout > #main:not(.iron-selected) > #scrim,
-    .dragging #scrim {
+    .dragging > #main > #scrim {
       visibility: visible;
-      opacity: 1;
+      opacity: var(--paper-drawer-panel-scrim-opacity, 1);
     }
 
     .narrow-layout > #main > * {
@@ -14256,7 +14548,7 @@ Polymer.Debounce = (function() {
   </style>
 
   <template>
-    <iron-media-query on-query-matches-changed="onQueryMatchesChanged" query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]">
+    <iron-media-query on-query-matches-changed="_onQueryMatchesChanged" query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]">
     </iron-media-query>
 
     <iron-selector attr-for-selected="id" class$="[[_computeIronSelectorClass(narrow, transition, dragging, rightDrawer)]]" activate-event="" selected="[[selected]]">
@@ -14264,8 +14556,6 @@ Polymer.Debounce = (function() {
       <div id="main" style$="[[_computeMainStyle(narrow, rightDrawer, drawerWidth)]]">
         <content select="[main]"></content>
         <div id="scrim" on-tap="closeDrawer"></div>
-        <div id="edgeSwipeOverlay" hidden$="[[_computeSwipeOverlayHidden(narrow, disableEdgeSwipe)]]">
-        </div>
       </div>
 
       <div id="drawer" style$="[[_computeDrawerStyle(drawerWidth)]]">
@@ -14282,6 +14572,10 @@ Polymer.Debounce = (function() {
   (function() {
 
     'use strict';
+
+   // this is the only `paper-drawer-panel` in
+   // the whole app that can be in `dragging` state
+    var sharedPanel = null;
 
     function classNames(obj) {
       var classNames = [];
@@ -14489,6 +14783,43 @@ Polymer.Debounce = (function() {
         up: '_upHandler'
       },
 
+      /**
+       * Toggles the panel open and closed.
+       *
+       * @method togglePanel
+       */
+      togglePanel: function() {
+        if (this._isMainSelected()) {
+          this.openDrawer();
+        } else {
+          this.closeDrawer();
+        }
+      },
+
+      /**
+       * Opens the drawer.
+       *
+       * @method openDrawer
+       */
+      openDrawer: function() {
+        this.selected = 'drawer';
+      },
+
+      /**
+       * Closes the drawer.
+       *
+       * @method closeDrawer
+       */
+      closeDrawer: function() {
+        this.selected = 'main';
+      },
+
+      ready: function() {
+        // Avoid transition at the beginning e.g. page loads and enable
+        // transitions only after the element is rendered and ready.
+        this.transition = true;
+      },
+
       _computeIronSelectorClass: function(narrow, transition, dragging, rightDrawer) {
         return classNames({
           dragging: dragging,
@@ -14524,55 +14855,22 @@ Polymer.Debounce = (function() {
         return !narrow || disableEdgeSwipe;
       },
 
-      _onTrack: function(event) {
-        switch (event.detail.state) {
-          case 'end':
-            this._trackEnd(event);
+      _onTrack: function(e) {
+        if (sharedPanel && this !== sharedPanel) {
+          return;
+        }
+        switch (e.detail.state) {
+          case 'start':
+            this._trackStart(e);
             break;
           case 'track':
-            this._trackX(event);
+            this._trackX(e);
             break;
-          case 'start':
-            this._trackStart(event);
+          case 'end':
+            this._trackEnd(e);
             break;
         }
-      },
 
-      ready: function() {
-        // Avoid transition at the beginning e.g. page loads and enable
-        // transitions only after the element is rendered and ready.
-        this.transition = true;
-      },
-
-      /**
-       * Toggles the panel open and closed.
-       *
-       * @method togglePanel
-       */
-      togglePanel: function() {
-        if (this._isMainSelected()) {
-          this.openDrawer();
-        } else {
-          this.closeDrawer();
-        }
-      },
-
-      /**
-       * Opens the drawer.
-       *
-       * @method openDrawer
-       */
-      openDrawer: function() {
-        this.selected = 'drawer';
-      },
-
-      /**
-       * Closes the drawer.
-       *
-       * @method closeDrawer
-       */
-      closeDrawer: function() {
-        this.selected = 'main';
       },
 
       _responsiveChange: function(narrow) {
@@ -14586,7 +14884,7 @@ Polymer.Debounce = (function() {
         this.fire('paper-responsive-change', {narrow: this.narrow});
       },
 
-      onQueryMatchesChanged: function(e) {
+      _onQueryMatchesChanged: function(e) {
         this._responsiveChange(e.detail.value);
       },
 
@@ -14617,13 +14915,17 @@ Polymer.Debounce = (function() {
       },
 
       _downHandler: function(e) {
-        if (!this.dragging && this._isMainSelected() && this._isEdgeTouch(e)) {
+        if (!this.dragging && this._isMainSelected() && this._isEdgeTouch(e) && !sharedPanel) {
           this._startEdgePeek();
+          // grab this panel
+          sharedPanel = this;
         }
       },
 
       _upHandler: function(e) {
         this._stopEdgePeek();
+        // release the panel
+        sharedPanel = null;
       },
 
       _onTap: function(e) {
@@ -14637,8 +14939,8 @@ Polymer.Debounce = (function() {
         }
       },
 
-      _isEdgeTouch: function(event) {
-        var x = event.detail.x;
+      _isEdgeTouch: function(e) {
+        var x = e.detail.x;
 
         return !this.disableEdgeSwipe && this._swipeAllowed() &&
           (this.rightDrawer ?
@@ -14646,8 +14948,9 @@ Polymer.Debounce = (function() {
             x <= this.edgeSwipeSensitivity);
       },
 
-      _trackStart: function(event) {
+      _trackStart: function(e) {
         if (this._swipeAllowed()) {
+          sharedPanel = this;
           this.dragging = true;
 
           if (this._isMainSelected()) {
@@ -14671,16 +14974,15 @@ Polymer.Debounce = (function() {
         }
       },
 
-      _trackX: function(event) {
-        var dx = event.detail.dx;
-
+      _trackX: function(e) {
         if (this.dragging) {
+          var dx = e.detail.dx;
+
           if (this.peeking) {
             if (Math.abs(dx) <= this.edgeSwipeSensitivity) {
               // Ignore trackx until we move past the edge peek.
               return;
             }
-
             this.peeking = false;
           }
 
@@ -14688,12 +14990,13 @@ Polymer.Debounce = (function() {
         }
       },
 
-      _trackEnd: function(event) {
+      _trackEnd: function(e) {
         if (this.dragging) {
-          var xDirection = event.detail.dx > 0;
+          var xDirection = e.detail.dx > 0;
 
           this.dragging = false;
           this.transition = true;
+          sharedPanel = null;
           this._moveDrawer(null);
 
           if (this.rightDrawer) {
@@ -14737,21 +15040,26 @@ Polymer.Debounce = (function() {
 
       display: block;
       position: relative;
+
+      /* Create a stack context, we will need it for the shadow*/
+      z-index: 0;
     }
 
     #mainContainer {
-      @apply(--paper-header-panel-container);
+      @apply(--layout-flex);
 
       position: relative;
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      flex-basis: 0.0001px;
     }
 
     /*
      * mode: scroll
      */
     :host([mode=scroll]) #mainContainer {
+      @apply(--paper-header-panel-scroll-container);
       overflow: visible;
     }
 
@@ -14765,6 +15073,7 @@ Polymer.Debounce = (function() {
      * mode: cover
      */
     :host([mode=cover]) #mainContainer {
+      @apply(--paper-header-panel-cover-container);
       position: absolute;
       top: 0;
       right: 0;
@@ -14772,18 +15081,35 @@ Polymer.Debounce = (function() {
       left: 0;
     }
 
-    :host([mode=cover]) #dropShadow {
-      position: static;
-      width: 100%;
+    /*
+     * mode: standard
+     */
+    :host([mode=standard]) #mainContainer {
+      @apply(--paper-header-panel-standard-container);
     }
 
-    ::content paper-toolbar,
-    ::content .paper-header {
+    /*
+     * mode: waterfall
+     */
+    :host([mode=waterfall]) #mainContainer {
+      @apply(--paper-header-panel-waterfall-container);
+    }
+
+    /*
+     * mode: waterfall-tall
+     */
+    :host([mode=waterfall-tall]) #mainContainer {
+      @apply(--paper-header-panel-waterfall-tall-container);
+    }
+
+    :host ::content paper-toolbar,
+    :host ::content .paper-header {
       position: relative;
+      overflow: visible !important;
     }
 
-    ::content paper-toolbar:after,
-    ::content .paper-header:after {
+    :host ::content paper-toolbar:after,
+    :host ::content .paper-header:after {
       @apply(--paper-header-panel-shadow);
 
       -webkit-transition: opacity 0.5s, -webkit-transform 0.5s;
@@ -14796,7 +15122,6 @@ Polymer.Debounce = (function() {
       position: absolute;
       left: 0px;
       right: 0px;
-
       z-index: 1;
 
       -webkit-transform: scale3d(1, 0, 1);
@@ -14806,8 +15131,8 @@ Polymer.Debounce = (function() {
       transform-origin: 0% 0%;
     }
 
-    ::content paper-toolbar.has-shadow:after,
-    ::content .paper-header.has-shadow:after {
+    :host ::content paper-toolbar.has-shadow:after,
+    :host ::content .paper-header.has-shadow:after {
       opacity: 1;
       -webkit-transform: scale3d(1, 1, 1);
       transform: scale3d(1, 1, 1);
@@ -14829,20 +15154,20 @@ Polymer.Debounce = (function() {
 
     'use strict';
 
+    var SHADOW_WHEN_SCROLLING = 1;
+    var SHADOW_ALWAYS = 2;
+
+
     var MODE_CONFIGS = {
-      noShadow: {
-        cover: true,
-        scroll: true,
-        seamed: true
-      },
 
       outerScroll: {
         scroll: true
       },
 
       shadowMode: {
-        waterfall: true,
-        'waterfall-tall': true
+        standard: SHADOW_ALWAYS,
+        waterfall: SHADOW_WHEN_SCROLLING,
+        'waterfall-tall': SHADOW_WHEN_SCROLLING
       },
 
       tallMode: {
@@ -14916,9 +15241,9 @@ Polymer.Debounce = (function() {
          */
         mode: {
           type: String,
-          value: '',
-          reflectToAttribute: true,
-          observer: '_modeChanged'
+          value: 'standard',
+          observer: '_modeChanged',
+          reflectToAttribute: true
         },
 
         /**
@@ -14984,10 +15309,33 @@ Polymer.Debounce = (function() {
         return this._getScrollerForMode(this.mode);
       },
 
-      _computeDropShadowHidden: function(atTop, mode, shadow) {
-        var needsShadow = atTop && MODE_CONFIGS.shadowMode[mode] || MODE_CONFIGS.noShadow[mode];
+      /**
+       * Returns true if the scroller has a visible shadow.
+       *
+       * @property visibleShadow
+       * @type Boolean
+       */
+      get visibleShadow() {
+        return this.header.classList.contains('has-shadow');
+      },
 
-        this.header.classList.toggle('has-shadow', this.shadow || !needsShadow);
+      _computeDropShadowHidden: function(atTop, mode, shadow) {
+
+        var shadowMode = MODE_CONFIGS.shadowMode[mode];
+
+        if (this.shadow) {
+          this.toggleClass('has-shadow', true, this.header);
+
+        } else if (shadowMode === SHADOW_ALWAYS) {
+          this.toggleClass('has-shadow', true, this.header);
+
+        } else if (shadowMode === SHADOW_WHEN_SCROLLING && !atTop) {
+          this.toggleClass('has-shadow', true, this.header);
+
+        } else {
+          this.toggleClass('has-shadow', false, this.header);
+
+        }
       },
 
       _computeMainContainerClass: function(mode) {
@@ -15033,15 +15381,15 @@ Polymer.Debounce = (function() {
       },
 
       _keepScrollingState: function () {
-        var main = this.$.mainContainer;
+        var main = this.scroller;
         var header = this.header;
 
         this._setAtTop(main.scrollTop === 0);
 
         if (header && MODE_CONFIGS.tallMode[this.mode]) {
-          header.classList.toggle(this.tallClass, this.atTop ||
+          this.toggleClass(this.tallClass, this.atTop ||
               header.classList.contains(this.tallClass) &&
-              main.scrollHeight < this.offsetHeight);
+              main.scrollHeight < this.offsetHeight, header);
         }
       },
 
@@ -16088,9 +16436,9 @@ paper-toolbar {
   padding: 0 64px 0 4px;
 }
 
-.main-panel[mode=cover] {
-  --paper-header-panel-container: {
-    left: 64px !important;
+.main-panel {
+  --paper-header-panel-cover-container: {
+    left: 64px;
   };
 }
 

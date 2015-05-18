@@ -394,52 +394,6 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><!--
-`iron-selector` is an element which can be used to manage a list of elements
-that can be selected.  Tapping on the item will make the item selected.  The `selected` indicates
-which item is being selected.  The default is to use the index of the item.
-
-Example:
-
-    <iron-selector selected="0">
-      <div>Item 1</div>
-      <div>Item 2</div>
-      <div>Item 3</div>
-    </iron-selector>
-
-If you want to use the attribute value of an element for `selected` instead of the index,
-set `attrForSelected` to the name of the attribute.  For example, if you want to select item by
-`name`, set `attrForSelected` to `name`.
-
-Example:
-
-    <iron-selector attr-for-selected="name" selected="foo">
-      <div name="foo">Foo</div>
-      <div name="bar">Bar</div>
-      <div name="zot">Zot</div>
-    </iron-selector>
-
-`iron-selector` is not styled. Use the `iron-selected` CSS class to style the selected element.
-
-Example:
-
-    <style>
-      .iron-selected {
-        background: #eee;
-      }
-    </style>
-
-    ...
-
-    <iron-selector selected="0">
-      <div>Item 1</div>
-      <div>Item 2</div>
-      <div>Item 3</div>
-    </iron-selector>
-
-@group Polymer Core Elements
-@element iron-selector
-@homepage github.io
---><!--
 `paper-ripple` provides a visual effect that other paper elements can
 use to simulate a rippling effect emanating from the point of contact.  The
 effect can be visualized as a concentric circle with motion.
@@ -6546,9 +6500,9 @@ TODO(sjmiles): this module should produce either syntactic metadata
         } else if (ta === 'none') {
           prevent = true;
         } else if (ta === 'pan-x') {
-          prevent = dx >= dy;
-        } else if (ta === 'pan-y') {
           prevent = dy > dx;
+        } else if (ta === 'pan-y') {
+          prevent = dx > dy;
         }
         if (prevent) {
           ev.preventDefault();
@@ -7522,6 +7476,9 @@ Polymer.Debounce = (function() {
         var computedHost = this._rootDataHost || this;
         var computedvalue =
           computedHost[effect.method].apply(computedHost, args);
+        if (effect.negate) {
+          computedvalue = !computedvalue;
+        }
         this._applyEffectValue(computedvalue, effect);
       }
     },
@@ -7721,7 +7678,8 @@ Polymer.Debounce = (function() {
           args: sig.args,
           arg: arg,
           property: note.name,
-          index: index
+          index: index,
+          negate: note.negate
         });
       }, this);
     },
@@ -12134,10 +12092,8 @@ Polymer.Debounce = (function() {
       // install new svg element
       var svg = this._cloneIcon(iconName);
       if (svg) {
-        // TODO(sjmiles): I know, `with` is the devil ... except it isn't
-        with (Polymer.dom(element)) {
-          insertBefore(svg, childNodes[0]);
-        }
+        var pde = Polymer.dom(element);
+        pde.insertBefore(svg, pde.childNodes[0]);
         return element._svgIcon = svg;
       }
     },
@@ -12328,6 +12284,7 @@ Polymer.Debounce = (function() {
 </script>
 <script>
 
+  /** @behavior */
   Polymer.IronSelectableBehavior = {
 
     properties: {
@@ -12512,6 +12469,7 @@ Polymer.Debounce = (function() {
 
     _updateSelected: function() {
       this._selectSelected(this.selected);
+      this._selectionChange();
     },
 
     _selectSelected: function(selected) {
@@ -12560,7 +12518,6 @@ Polymer.Debounce = (function() {
       if (this.selectedAttribute) {
         this.toggleAttribute(this.selectedAttribute, isSelected, item);
       }
-      this._selectionChange();
       this.fire('iron-' + (isSelected ? 'select' : 'deselect'), {item: item});
     },
 
@@ -12616,6 +12573,7 @@ Polymer.Debounce = (function() {
 </script>
 <script>
 
+  /** @behavior */
   Polymer.IronMultiSelectableBehavior = [
     {
 
@@ -12693,6 +12651,7 @@ Polymer.Debounce = (function() {
         } else {
           this._selectSelected(this.selected);
         }
+        this._selectionChange();
       },
 
       _selectMulti: function(values) {
@@ -12730,6 +12689,50 @@ Polymer.Debounce = (function() {
 
 </script>
 <script>
+  /**
+  `iron-selector` is an element which can be used to manage a list of elements
+  that can be selected.  Tapping on the item will make the item selected.  The `selected` indicates
+  which item is being selected.  The default is to use the index of the item.
+
+  Example:
+
+      <iron-selector selected="0">
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+      </iron-selector>
+
+  If you want to use the attribute value of an element for `selected` instead of the index,
+  set `attrForSelected` to the name of the attribute.  For example, if you want to select item by
+  `name`, set `attrForSelected` to `name`.
+
+  Example:
+
+      <iron-selector attr-for-selected="name" selected="foo">
+        <div name="foo">Foo</div>
+        <div name="bar">Bar</div>
+        <div name="zot">Zot</div>
+      </iron-selector>
+
+  `iron-selector` is not styled. Use the `iron-selected` CSS class to style the selected element.
+
+  Example:
+
+      <style>
+        .iron-selected {
+          background: #eee;
+        }
+      </style>
+
+      ...
+
+      <iron-selector selected="0">
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+      </iron-selector>
+
+  */
 
   Polymer({
 
@@ -13137,6 +13140,7 @@ Polymer.Debounce = (function() {
       font-family: 'Roboto', sans-serif;
       margin: 0;
       background-color: #fafafa;
+      overflow: hidden;
     }
 
     device-layout-viewer {
@@ -14533,6 +14537,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 .view-select[show-all] {
+  display: block;
   width: 800px;
   height: 600px;
 }
