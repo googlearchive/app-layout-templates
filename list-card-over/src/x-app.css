@@ -40,9 +40,9 @@ paper-toolbar {
   padding: 0 64px 0 4px;
 }
 
-.main-panel[mode=cover] {
-  --paper-header-panel-container: {
-    left: 64px !important;
+.main-panel {
+  --paper-header-panel-cover-container: {
+    left: 64px;
   };
 }
 
