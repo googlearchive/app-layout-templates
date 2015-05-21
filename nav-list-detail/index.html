@@ -200,7 +200,10 @@ should implemented following the standard `Array` filter/sort API.
 
 In order to re-run the filter or sort functions based on changes to sub-fields
 of `items`, the `observe` property may be set as a space-separated list of
-`item` sub-fields that should cause a re-filter/sort when modified.
+`item` sub-fields that should cause a re-filter/sort when modified.  If
+the filter or sort function depends on properties not contained in `items`,
+the user should observe changes to those properties and call `render` to update
+the view based on the dependency change.
 
 For example, for an `dom-repeat` with a filter of the following:
 
@@ -449,16 +452,36 @@ Example:
       </paper-header-panel>
     </paper-drawer-panel>
 
-To position the drawer to the right, add `rightDrawer` attribute.
+To position the drawer to the right, add `right-drawer` attribute.
 
-    <paper-drawer-panel rightDrawer>
+    <paper-drawer-panel right-drawer>
       <div drawer> Drawer panel... </div>
       <div main> Main panel... </div>
     </paper-drawer-panel>
 
-@group Polymer Elements
-@element paper-drawer-panel
-@homepage github.io
+Styling paper-drawer-panel:
+
+To change the main container:
+  paper-drawer-panel {
+    --paper-drawer-panel-main-container: {
+      border-right: 1px solid grey;
+    };
+  }  
+
+To change the drawer container when it's in the left side:
+  paper-drawer-panel {
+    --paper-drawer-panel-left-drawer-container: {
+      border-right: 1px solid grey;
+    };
+  }
+
+To change the drawer container when it's in the right side:
+
+  paper-drawer-panel {
+    --paper-drawer-panel-right-drawer-container: {
+      border-left: 1px solid grey;
+    };
+  }
 --><!--
 `iron-media-query` can be used to data bind to a CSS media query.
 The `query` property is a bare CSS media query.
@@ -547,62 +570,6 @@ To change the panel container:
       };
     }
 --><!--
-`paper-ripple` provides a visual effect that other paper elements can
-use to simulate a rippling effect emanating from the point of contact.  The
-effect can be visualized as a concentric circle with motion.
-
-Example:
-
-    <paper-ripple></paper-ripple>
-
-`paper-ripple` listens to "mousedown" and "mouseup" events so it would display ripple
-effect when touches on it.  You can also defeat the default behavior and
-manually route the down and up actions to the ripple element.  Note that it is
-important if you call downAction() you will have to make sure to call
-upAction() so that `paper-ripple` would end the animation loop.
-
-Example:
-
-    <paper-ripple id="ripple" style="pointer-events: none;"></paper-ripple>
-    ...
-    downAction: function(e) {
-      this.$.ripple.downAction({x: e.x, y: e.y});
-    },
-    upAction: function(e) {
-      this.$.ripple.upAction();
-    }
-
-Styling ripple effect:
-
-  Use CSS color property to style the ripple:
-
-    paper-ripple {
-      color: #4285f4;
-    }
-
-  Note that CSS color property is inherited so it is not required to set it on
-  the `paper-ripple` element directly.
-
-By default, the ripple is centered on the point of contact.  Apply the `recenters`
-attribute to have the ripple grow toward the center of its container.
-
-    <paper-ripple recenters></paper-ripple>
-
-Apply `circle` class to make the rippling effect within a circle.
-
-    <paper-ripple class="circle"></paper-ripple>
-
-@group Paper Elements
-@element paper-ripple
-@homepage github.io
---><!--
-Fired when the animation finishes. This is useful if you want to wait until the ripple
-animation finishes to perform some action.
-
-@event transitionend
-@param {Object} detail
-@param {Object} detail.node The animated node
---><!--
 @group Paper Elements
 
 Material Design: <a href="http://www.google.com/design/spec/components/buttons.html">Buttons</a>
@@ -647,6 +614,79 @@ The opacity of the ripple is not customizable via CSS.
 @element paper-icon-button
 @homepage github.io
 --><!--
+`paper-ripple` provides a visual effect that other paper elements can
+use to simulate a rippling effect emanating from the point of contact.  The
+effect can be visualized as a concentric circle with motion.
+
+Example:
+
+    <paper-ripple></paper-ripple>
+
+`paper-ripple` listens to "mousedown" and "mouseup" events so it would display ripple
+effect when touches on it.  You can also defeat the default behavior and
+manually route the down and up actions to the ripple element.  Note that it is
+important if you call downAction() you will have to make sure to call
+upAction() so that `paper-ripple` would end the animation loop.
+
+Example:
+
+    <paper-ripple id="ripple" style="pointer-events: none;"></paper-ripple>
+    ...
+    downAction: function(e) {
+      this.$.ripple.downAction({x: e.x, y: e.y});
+    },
+    upAction: function(e) {
+      this.$.ripple.upAction();
+    }
+
+Styling ripple effect:
+
+  Use CSS color property to style the ripple:
+
+    paper-ripple {
+      color: #4285f4;
+    }
+
+  Note that CSS color property is inherited so it is not required to set it on
+  the `paper-ripple` element directly.
+
+By default, the ripple is centered on the point of contact.  Apply the `recenters`
+attribute to have the ripple grow toward the center of its container.
+
+    <paper-ripple recenters></paper-ripple>
+
+You can also  center the ripple inside its container from the start.
+
+    <paper-ripple center></paper-ripple>
+
+Apply `circle` class to make the rippling effect within a circle.
+
+    <paper-ripple class="circle"></paper-ripple>
+
+@group Paper Elements
+@element paper-ripple
+@homepage github.io
+--><!--
+Fired when the animation finishes. This is useful if you want to wait until the ripple
+animation finishes to perform some action.
+
+@event transitionend
+@param {Object} detail
+@param {Object} detail.node The animated node
+--><!--
+`Polymer.IronA11yKeysBehavior` provides a normalized interface for processing
+keyboard commands that pertain to [WAI-ARIA best practices](http://www.w3.org/TR/wai-aria-practices/#kbd_general_binding).
+The element takes care of browser differences with respect to Keyboard events
+and uses an expressive syntax to filter key presses.
+
+Use the `keyBindings` prototype property to express what combination of keys
+will trigger the event to fire.
+
+Use the `key-event-target` attribute to set up event handlers on a specific
+node.
+The `keys-pressed` event will fire when one of the key combinations set with the
+`keys` property is pressed.
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE
@@ -681,7 +721,7 @@ Example:
 
     <paper-toolbar>
       <paper-icon-button icon="menu" on-tap="{{menuAction}}"></paper-icon-button>
-      <div flex>Title</div>
+      <div title>Title</div>
       <paper-icon-button icon="more" on-tap="{{moreAction}}"></paper-icon-button>
     </paper-toolbar>
 
@@ -704,8 +744,8 @@ When `tall`, items can pin to either the top (default), middle or bottom.  Use
 
     <paper-toolbar class="tall">
       <paper-icon-button icon="menu"></paper-icon-button>
-      <div class="middle">Middle Title</div>
-      <div class="bottom">Bottom Title</div>
+      <div title class="middle">Middle Title</div>
+      <div title class="bottom">Bottom Title</div>
     </paper-toolbar>
 
 For `medium-tall` toolbar, the middle and bottom contents overlap and are
@@ -3349,7 +3389,7 @@ if (typeof HTMLTemplateElement === "undefined") {
       var flat = [];
       behaviors.forEach(function(b) {
         if (b instanceof Array) {
-          flat = flat.concat(b);
+          flat = flat.concat(this._flattenBehaviorsList(b));
         } else {
           flat.push(b);
         }
@@ -4076,6 +4116,8 @@ if (typeof HTMLTemplateElement === "undefined") {
     _ready: function() {
       // extension point
       this._beforeClientsReady();
+      // prepare root
+      this._setupRoot();
       this._readyClients();
       // extension point
       this._afterClientsReady();
@@ -4083,8 +4125,6 @@ if (typeof HTMLTemplateElement === "undefined") {
     },
 
     _readyClients: function() {
-      // prepare root
-      this._setupRoot();
       // logically distribute self
       this._beginDistribute();
       // now fully prepare localChildren
@@ -4622,13 +4662,10 @@ Polymer.domInnerHTML = (function() {
       },
 
       _lazyDistribute: function(host) {
-        if (host.shadyRoot) {
+        // note: only try to distribute if the root is not clean; this ensures
+        // we don't distribute before initial distribution
+        if (host.shadyRoot && host.shadyRoot._distributionClean) {
           host.shadyRoot._distributionClean = false;
-        }
-        // TODO(sorvell): optimize debounce so it does less work by default
-        // and then remove these checks...
-        // need to dirty distribution once.
-        if (!host.isDebouncerActive('_distribute')) {
           host.debounce('_distribute', host._distributeContent);
           dirtyRoots.push(host);
         }
@@ -4780,7 +4817,7 @@ Polymer.domInnerHTML = (function() {
       },
 
       _parentNeedsDistribution: function(parent) {
-        return parent.shadyRoot && hasInsertionPoint(parent.shadyRoot);
+        return parent && parent.shadyRoot && hasInsertionPoint(parent.shadyRoot);
       },
 
       // TODO(sorvell): technically we should check non-fragment nodes for
@@ -4959,7 +4996,7 @@ Polymer.domInnerHTML = (function() {
       },
 
       _distributeParent: function() {
-        if (this.parentNode && this.parentNode.shadyRoot) {
+        if (this._parentNeedsDistribution(this.parentNode)) {
           this._lazyDistribute(this.parentNode);
         }
       }
@@ -6590,24 +6627,26 @@ TODO(sjmiles): this module should produce either syntactic metadata
     return ta;
   }
 
-  function deepTargetFind(x, y) {
-    var node = document.elementFromPoint(x, y);
-    // this code path is only taken when native ShadowDOM is used
-    var next = node.shadowRoot;
-    while(next) {
-      next = next.elementFromPoint(x, y);
-      if (next) {
-        node = next;
-        next = next.shadowRoot;
-      }
-    }
-    return node;
-  }
 
   var Gestures = {
     gestures: {},
     recognizers: [],
 
+    deepTargetFind: function(x, y) {
+      var node = document.elementFromPoint(x, y);
+      var next = node;
+      // this code path is only taken when native ShadowDOM is used
+      // if there is a shadowroot, it may have a node at x/y
+      // if there is not a shadowroot, exit the loop
+      while (next && next.shadowRoot) {
+        // if there is a node at x/y in the shadowroot, look deeper
+        next = next.shadowRoot.elementFromPoint(x, y);
+        if (next) {
+          node = next;
+        }
+      }
+      return node;
+    },
     handleNative: function(ev) {
       var handled;
       var type = ev.type;
@@ -6889,7 +6928,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
         ddx: ddx,
         ddy: ddy,
         hover: function() {
-          return deepTargetFind(touch.clientX, touch.clientY);
+          return Gestures.deepTargetFind(touch.clientX, touch.clientY);
         }
       });
     }
@@ -7885,6 +7924,10 @@ Polymer.Debounce = (function() {
         if (property === 'className') {
           value = this._scopeElementClass(node, value);
         }
+        // Some browsers serialize `undefined` textContent to `"undefined"`
+        if (property === 'textContent') {
+          value = value == undefined ? '' : value;
+        }
         return node[property] = value;
       }
     }
@@ -8496,101 +8539,126 @@ Polymer.Debounce = (function() {
   Extremely simple css parser. Intended to be not more than what we need
   and definitely not necessarly correct =).
 */
-(function() {
+Polymer.CssParse = (function() {
 
-  // given a string of css, return a simple rule tree
-  function parse(text) {
-    text = clean(text);
-    return parseCss(lex(text), text);
-  }
+  var api = {
+    // given a string of css, return a simple rule tree
+    parse: function(text) {
+      text = this._clean(text);
+      return this._parseCss(this._lex(text), text);
+    },
 
-  // remove stuff we don't care about that may hinder parsing
-  function clean(cssText) {
-    return cssText.replace(rx.comments, '').replace(rx.port, '');
-  }
+    // remove stuff we don't care about that may hinder parsing
+    _clean: function (cssText) {
+      return cssText.replace(rx.comments, '').replace(rx.port, '');
+    },
 
-  // super simple {...} lexer that returns a node tree
-  function lex(text) {
-    var root = {start: 0, end: text.length};
-    var n = root;
-    for (var i=0, s=0, l=text.length; i < l; i++) {
-      switch (text[i]) {
-        case OPEN_BRACE:
-          //console.group(i);
-          if (!n.rules) {
-            n.rules = [];
-          }
-          var p = n;
-          var previous = p.rules[p.rules.length-1];
-          n = {start: i+1, parent: p, previous: previous};
-          p.rules.push(n);
-          break;
-        case CLOSE_BRACE: 
-          //console.groupEnd(n.start);
-          n.end = i+1;
-          n = n.parent || root;
-          break;
-      }
-    }
-    return root;
-  }
-
-  // add selectors/cssText to node tree
-  function parseCss(node, text) {
-    var t = text.substring(node.start, node.end-1);
-    node.parsedCssText = node.cssText = t.trim();
-    if (node.parent) {
-      var ss = node.previous ? node.previous.end : node.parent.start;
-      t = text.substring(ss, node.start-1);
-      // TODO(sorvell): ad hoc; make selector include only after last ;
-      // helps with mixin syntax
-      t = t.substring(t.lastIndexOf(';')+1);
-      node.parsedSelector = node.selector = t.trim();
-    }
-    var r$ = node.rules;
-    if (r$) {
-      for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
-        parseCss(r, text);
-      }  
-    }
-    return node;  
-  }
-
-  // stringify parsed css.
-  function stringify(node, preserveProperties, text) {
-    text = text || '';
-    // calc rule cssText
-    var cssText = '';
-    if (node.cssText || node.rules) {
-      var r$ = node.rules;
-      if (r$ && (preserveProperties || !hasMixinRules(r$))) {
-        for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
-          cssText = stringify(r, preserveProperties, cssText);
-        }  
-      } else {
-        cssText = preserveProperties ? node.cssText : 
-          removeCustomProps(node.cssText);  
-        cssText = cssText.trim();
-        if (cssText) {
-          cssText = '  ' + cssText + '\n';
+    // super simple {...} lexer that returns a node tree
+    _lex: function(text) {
+      var root = {start: 0, end: text.length};
+      var n = root;
+      for (var i=0, s=0, l=text.length; i < l; i++) {
+        switch (text[i]) {
+          case this.OPEN_BRACE:
+            //console.group(i);
+            if (!n.rules) {
+              n.rules = [];
+            }
+            var p = n;
+            var previous = p.rules[p.rules.length-1];
+            n = {start: i+1, parent: p, previous: previous};
+            p.rules.push(n);
+            break;
+          case this.CLOSE_BRACE: 
+            //console.groupEnd(n.start);
+            n.end = i+1;
+            n = n.parent || root;
+            break;
         }
       }
-    }
-    // emit rule iff there is cssText
-    if (cssText) {
-      if (node.selector) {
-        text += node.selector + ' ' + OPEN_BRACE + '\n';
-      }
-      text += cssText;
-      if (node.selector) {
-        text += CLOSE_BRACE + '\n\n';
-      }
-    }
-    return text;
-  }
+      return root;
+    },
 
-  var OPEN_BRACE = '{';
-  var CLOSE_BRACE = '}';
+    // add selectors/cssText to node tree
+    _parseCss: function(node, text) {
+      var t = text.substring(node.start, node.end-1);
+      node.parsedCssText = node.cssText = t.trim();
+      if (node.parent) {
+        var ss = node.previous ? node.previous.end : node.parent.start;
+        t = text.substring(ss, node.start-1);
+        // TODO(sorvell): ad hoc; make selector include only after last ;
+        // helps with mixin syntax
+        t = t.substring(t.lastIndexOf(';')+1);
+        var s = node.parsedSelector = node.selector = t.trim();
+        node.atRule = (s.indexOf(AT_START) === 0);
+        // note, support a subset of rule types...
+        if (node.atRule) {
+          if (s.indexOf(MEDIA_START) === 0) {
+            node.type = this.types.MEDIA_RULE;
+          } else if (s.match(rx.keyframesRule)) {
+            node.type = this.types.KEYFRAMES_RULE;
+          }
+        } else {
+          if (s.indexOf(VAR_START) === 0) {
+            node.type = this.types.MIXIN_RULE;
+          } else {
+            node.type = this.types.STYLE_RULE;
+          }
+        }
+      }
+      var r$ = node.rules;
+      if (r$) {
+        for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
+          this._parseCss(r, text);
+        }  
+      }
+      return node;  
+    },
+
+    // stringify parsed css.
+    stringify: function(node, preserveProperties, text) {
+      text = text || '';
+      // calc rule cssText
+      var cssText = '';
+      if (node.cssText || node.rules) {
+        var r$ = node.rules;
+        if (r$ && (preserveProperties || !hasMixinRules(r$))) {
+          for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
+            cssText = this.stringify(r, preserveProperties, cssText);
+          }  
+        } else {
+          cssText = preserveProperties ? node.cssText : 
+            removeCustomProps(node.cssText);  
+          cssText = cssText.trim();
+          if (cssText) {
+            cssText = '  ' + cssText + '\n';
+          }
+        }
+      }
+      // emit rule iff there is cssText
+      if (cssText) {
+        if (node.selector) {
+          text += node.selector + ' ' + this.OPEN_BRACE + '\n';
+        }
+        text += cssText;
+        if (node.selector) {
+          text += this.CLOSE_BRACE + '\n\n';
+        }
+      }
+      return text;
+    },
+
+    types: {
+      STYLE_RULE: 1,
+      KEYFRAMES_RULE: 7,
+      MEDIA_RULE: 4,
+      MIXIN_RULE: 1000
+    },
+
+    OPEN_BRACE: '{',
+    CLOSE_BRACE: '}'
+
+  };
 
   function hasMixinRules(rules) {
     return (rules[0].selector.indexOf(VAR_START) >= 0);
@@ -8600,10 +8668,13 @@ Polymer.Debounce = (function() {
     return cssText
       .replace(rx.customProp, '')
       .replace(rx.mixinProp, '')
-      .replace(rx.mixinApply, '');
+      .replace(rx.mixinApply, '')
+      .replace(rx.varApply, '');
   }
 
   var VAR_START = '--';
+  var MEDIA_START = '@media';
+  var AT_START = '@';
 
   // helper regexp's
   var rx = {
@@ -8611,14 +8682,13 @@ Polymer.Debounce = (function() {
     port: /@import[^;]*;/gim,
     customProp: /--[^;{]*?:[^{};]*?;/gim,
     mixinProp: /--[^;{]*?:[^{;]*?{[^}]*?};?/gim,
-    mixinApply: /@apply[\s]*\([^)]*?\)[\s]*;/gim
+    mixinApply: /@apply[\s]*\([^)]*?\)[\s]*;/gim,
+    varApply: /[^;:]*?:[^;]*var[^;]*;/gim,
+    keyframesRule: /^@[^\s]*keyframes/,
   };
 
   // exports 
-  Polymer.CssParse = {
-    parse: parse,
-    stringify: stringify
-  };
+  return api;
 
 })();
 
@@ -8628,328 +8698,78 @@ Polymer.Debounce = (function() {
   Polymer.StyleUtil = (function() {
 
     return {
-      toCssText: function(rules, callback) {
+
+      MODULE_STYLES_SELECTOR: 'style, link[rel=import][type~=css]',
+
+      toCssText: function(rules, callback, preserveProperties) {
         if (typeof rules === 'string') {
-          rules = Polymer.CssParse.parse(rules);
+          rules = this.parser.parse(rules);
         } 
         if (callback) {
           this.forEachStyleRule(rules, callback);
         }
-        return Polymer.CssParse.stringify(rules);
+        return this.parser.stringify(rules, preserveProperties);
       },
 
-      forEachStyleRule: function(node, cb) {
+      forRulesInStyles: function(styles, callback) {
+        for (var i=0, l=styles.length, s; (i<l) && (s=styles[i]); i++) {
+          this.forEachStyleRule(this.rulesForStyle(s), callback);
+        }
+      },
+
+      rulesForStyle: function(style) {
+        if (!style.__cssRules) {
+          style.__cssRules = this.parser.parse(style.textContent);
+        }
+        return style.__cssRules;
+      },
+
+      clearStyleRules: function(style) {
+        style.__cssRules = null;
+      },
+
+      forEachStyleRule: function(node, callback) {
         var s = node.selector;
         var skipRules = false;
-        if (s) {
-          if ((s.indexOf(this.AT_RULE) !== 0) && (s.indexOf(this.MIXIN_SELECTOR) !== 0)) {
-            cb(node);
-          }
-          skipRules = (s.indexOf(this.KEYFRAME_RULE) >= 0) || 
-            (s.indexOf(this.MIXIN_SELECTOR) >= 0);
+        if (node.type === this.ruleTypes.STYLE_RULE) {
+          callback(node);
+        } else if (node.type === this.ruleTypes.KEYFRAMES_RULE || 
+            node.type === this.ruleTypes.MIXIN_RULE) {
+          skipRules = true;
         }
         var r$ = node.rules;
         if (r$ && !skipRules) {
           for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
-            this.forEachStyleRule(r, cb);
+            this.forEachStyleRule(r, callback);
           }
         }
       },
 
       // add a string of cssText to the document.
-      applyCss: function(cssText, moniker, target, lowPriority) {
+      applyCss: function(cssText, moniker, target, afterNode) {
         var style = document.createElement('style');
         if (moniker) {
           style.setAttribute('scope', moniker);
         }
         style.textContent = cssText;
         target = target || document.head;
-        if (lowPriority) {
+        if (!afterNode) {
           var n$ = target.querySelectorAll('style[scope]');
-          var ref = n$.length ? n$[n$.length-1].nextSibling : target.firstChild;
-          target.insertBefore(style, ref);
-       } else {
-          target.appendChild(style);
-        }
+          afterNode = n$[n$.length-1];
+        } 
+        target.insertBefore(style, 
+          (afterNode && afterNode.nextSibling) || target.firstChild);
         return style;
-      },
-
-      AT_RULE: '@',
-      KEYFRAME_RULE: 'keyframe',
-      MIXIN_SELECTOR: '--',
-      parser: Polymer.CssParse
-    };
-
-  })();
-
-</script><script>
-
-  (function() {
-
-    /* Transforms ShadowDOM styling into ShadyDOM styling
-
-     * scoping: 
-
-        * elements in scope get scoping selector class="x-foo-scope"
-        * selectors re-written as follows:
-
-          div button -> div.x-foo-scope button.x-foo-scope
-
-     * :host -> scopeName
-
-     * :host(...) -> scopeName...
-
-     * ::content -> ' ' NOTE: requires use of scoping selector and selectors
-       cannot otherwise be scoped:
-       e.g. :host ::content > .bar -> x-foo > .bar
-
-     * ::shadow, /deep/: processed simimlar to ::content
-
-     * :host-context(...): NOT SUPPORTED
-
-    */
-
-    // Given a node and scope name, add a scoping class to each node 
-    // in the tree. This facilitates transforming css into scoped rules. 
-    function transformDom(node, scope, useAttr, shouldRemoveScope) {
-      _transformDom(node, scope || '', useAttr, shouldRemoveScope);
-    }
-
-    function _transformDom(node, selector, useAttr, shouldRemoveScope) {
-      if (node.setAttribute) {
-        transformElement(node, selector, useAttr, shouldRemoveScope);
-      }
-      var c$ = Polymer.dom(node).childNodes;
-      for (var i=0; i<c$.length; i++) {
-        _transformDom(c$[i], selector, useAttr, shouldRemoveScope);
-      }
-    }
-
-    function transformElement(element, scope, useAttr, shouldRemoveScope) {
-      if (useAttr) {
-        if (shouldRemoveScope) {
-          element.removeAttribute(SCOPE_NAME);
-        } else {
-          element.setAttribute(SCOPE_NAME, scope);
-        }
-      } else {
-        // note: if using classes, we add both the general 'style-scope' class
-        // as well as the specific scope. This enables easy filtering of all
-        // `style-scope` elements
-        if (scope) {
-          if (shouldRemoveScope) {
-            element.classList.remove(SCOPE_NAME);
-            element.classList.remove(scope);
-          } else {
-            element.classList.add(SCOPE_NAME);
-            element.classList.add(scope);
-          }
-        }
-      }
-    }
-
-    function transformHost(host, scope) {
-    }
-
-    // Given a string of cssText and a scoping string (scope), returns
-    // a string of scoped css where each selector is transformed to include
-    // a class created from the scope. ShadowDOM selectors are also transformed
-    // (e.g. :host) to use the scoping selector.
-    function transformCss(rules, scope, ext, callback, useAttr) {
-      var hostScope = calcHostScope(scope, ext);
-      scope = calcElementScope(scope, useAttr);
-      return Polymer.StyleUtil.toCssText(rules, function(rule) {
-        if (!rule.isScoped) {
-          transformRule(rule, scope, hostScope);
-          rule.isScoped = true;
-        }
-        if (callback) {
-          callback(rule, scope, hostScope);
-        }
-      });
-    }
-
-    function calcElementScope(scope, useAttr) {
-      if (scope) {
-        return useAttr ?
-          CSS_ATTR_PREFIX + scope + CSS_ATTR_SUFFIX :
-          CSS_CLASS_PREFIX + scope;
-      } else {
-        return '';
-      }
-    }
-
-    function calcHostScope(scope, ext) {
-      return ext ? '[is=' +  scope + ']' : scope;
-    }
-
-    function transformRule(rule, scope, hostScope) {
-      _transformRule(rule, transformComplexSelector,
-        scope, hostScope);
-    }
-
-    // transforms a css rule to a scoped rule.
-    function _transformRule(rule, transformer, scope, hostScope) {
-      var p$ = rule.selector.split(COMPLEX_SELECTOR_SEP);
-      for (var i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
-        p$[i] = transformer(p, scope, hostScope);
-      }
-      rule.selector = p$.join(COMPLEX_SELECTOR_SEP);
-    }
-
-    function transformComplexSelector(selector, scope, hostScope) {
-      var stop = false;
-      selector = selector.replace(SIMPLE_SELECTOR_SEP, function(m, c, s) {
-        if (!stop) {
-          var o = transformCompoundSelector(s, c, scope, hostScope);
-          if (o.stop) {
-            stop = true;
-          }
-          c = o.combinator;
-          s = o.value;  
-        }
-        return c + s;
-      });
-      return selector;
-    }
-
-    function transformCompoundSelector(selector, combinator, scope, hostScope) {
-      // replace :host with host scoping class
-      var jumpIndex = selector.search(SCOPE_JUMP);
-      if (selector.indexOf(HOST) >=0) {
-        // :host(...)
-        selector = selector.replace(HOST_PAREN, function(m, host, paren) {
-          return hostScope + paren;
-        });
-        // now normal :host
-        selector = selector.replace(HOST, hostScope);
-      // replace other selectors with scoping class
-      } else if (jumpIndex !== 0) {
-        selector = scope ? transformSimpleSelector(selector, scope) : selector;
-      }
-      // remove left-side combinator when dealing with ::content.
-      if (selector.indexOf(CONTENT) >= 0) {
-        combinator = '';
-      }
-      // process scope jumping selectors up to the scope jump and then stop
-      // e.g. .zonk ::content > .foo ==> .zonk.scope > .foo
-      var stop;
-      if (jumpIndex >= 0) {
-        selector = selector.replace(SCOPE_JUMP, ' ');
-        stop = true;
-      }
-      return {value: selector, combinator: combinator, stop: stop};
-    }
-
-    function transformSimpleSelector(selector, scope) {
-      var p$ = selector.split(PSEUDO_PREFIX);
-      p$[0] += scope;
-      return p$.join(PSEUDO_PREFIX);
-    }
-
-    function transformRootRule(rule) {
-      _transformRule(rule, transformRootSelector);
-    }
-
-    function transformRootSelector(selector) {
-      return selector.match(SCOPE_JUMP) ?
-        transformComplexSelector(selector) :
-        selector.trim() + SCOPE_ROOT_SELECTOR;
-    }
-
-    var SCOPE_NAME = 'style-scope';
-    var SCOPE_ROOT_SELECTOR = ':not([' + SCOPE_NAME + '])' + 
-      ':not(.' + SCOPE_NAME + ')';
-    var COMPLEX_SELECTOR_SEP = ',';
-    var SIMPLE_SELECTOR_SEP = /(^|[\s>+~]+)([^\s>+~]+)/g;
-    var HOST = ':host';
-    // NOTE: this supports 1 nested () pair for things like 
-    // :host(:not([selected]), more general support requires
-    // parsing which seems like overkill
-    var HOST_PAREN = /(\:host)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/g;
-    var CONTENT = '::content';
-    var SCOPE_JUMP = /\:\:content|\:\:shadow|\/deep\//;
-    var CSS_CLASS_PREFIX = '.';
-    var CSS_ATTR_PREFIX = '[' + SCOPE_NAME + '~=';
-    var CSS_ATTR_SUFFIX = ']';
-    var PSEUDO_PREFIX = ':';
-
-    // exports
-    Polymer.StyleTransformer = {
-      element: transformElement,
-      dom: transformDom,
-      host: transformHost,
-      css: transformCss,
-      rule: transformRule,
-      rootRule: transformRootRule,
-      SCOPE_NAME: SCOPE_NAME
-    };
-
-  })();
-
-</script>
-<script>
-
-  (function() {
-
-    var prepTemplate = Polymer.Base._prepTemplate;
-    var prepElement = Polymer.Base._prepElement;
-    var baseStampTemplate = Polymer.Base._stampTemplate;
-    var nativeShadow = Polymer.Settings.useNativeShadow;
-
-    Polymer.Base._addFeature({
-
-      // declaration-y
-      _prepTemplate: function() {
-        prepTemplate.call(this);
-        // scope css
-        this._styles = this._prepareStyles();
-        var cssText = this._transformStyles(this._styles);
-        if (this._encapsulateStyle === undefined) {
-          this._encapsulateStyle = !nativeShadow && 
-            Boolean(this._template);
-        }
-        if (cssText && this._template) {
-          Polymer.StyleUtil.applyCss(cssText, this.is, 
-            nativeShadow ? this._template.content : null, true);
-        }
-      },
-
-      _prepElement: function(element) {
-        if (this._encapsulateStyle) {
-          Polymer.StyleTransformer.element(element, this.is,
-            this._scopeCssViaAttr);
-        }
-        prepElement.call(this, element);
-      },
-
-      // search for extra style modules via `styleModules`
-      // TODO(sorvell): consider dropping support for `styleModules`
-      _prepareStyles: function() {
-        var cssText = '', m$ = this.styleModules;
-        if (m$) {
-          for (var i=0, l=m$.length, m; (i<l) && (m=m$[i]); i++) {
-            cssText += this._cssFromModule(m);
-          }
-        }
-        cssText += this._cssFromModule(this.is);
-        var styles = [];
-        if (cssText) {
-          var s = document.createElement('style');
-          s.textContent = cssText;  
-          styles.push(s);
-        }
-        return styles;
       },
 
       // returns cssText of styles in a given module; also un-applies any
       // styles that apply to the document.
-      _cssFromModule: function(moduleId) {
+      cssFromModule: function(moduleId) {
         var m = Polymer.DomModule.import(moduleId);
         if (m && !m._cssText) {
           var cssText = '';
           var e$ = Array.prototype.slice.call(
-            m.querySelectorAll(STYLES_SELECTOR));
+            m.querySelectorAll(this.MODULE_STYLES_SELECTOR));
           for (var i=0, e; i < e$.length; i++) {
             e = e$[i];
             // style elements inside dom-modules will apply to the main document
@@ -8973,52 +8793,408 @@ Polymer.Debounce = (function() {
         return m && m._cssText || '';
       },
 
-      _transformStyles: function(styles, callback) {
-        var cssText = '';
-        for (var i=0, l=styles.length, s, text; (i<l) && (s=styles[i]); i++) {
-          var rules = this._rulesForStyle(s);
-          cssText += nativeShadow ?
-            Polymer.StyleUtil.toCssText(rules, callback) :
-            Polymer.StyleTransformer.css(rules, this.is, this.extends, callback,
-            this._scopeCssViaAttr) + '\n\n';
-        }
-        return cssText.trim();
+      parser: Polymer.CssParse,
+      ruleTypes: Polymer.CssParse.types
+
+    };
+
+  })();
+
+</script><script>
+
+  Polymer.StyleTransformer = (function() {
+
+    var nativeShadow = Polymer.Settings.useNativeShadow;
+    var styleUtil = Polymer.StyleUtil;
+
+    /* Transforms ShadowDOM styling into ShadyDOM styling
+
+     * scoping: 
+
+        * elements in scope get scoping selector class="x-foo-scope"
+        * selectors re-written as follows:
+
+          div button -> div.x-foo-scope button.x-foo-scope
+
+     * :host -> scopeName
+
+     * :host(...) -> scopeName...
+
+     * ::content -> ' ' NOTE: requires use of scoping selector and selectors
+       cannot otherwise be scoped:
+       e.g. :host ::content > .bar -> x-foo > .bar
+
+     * ::shadow, /deep/: processed simimlar to ::content
+
+     * :host-context(...): NOT SUPPORTED
+
+    */
+    var api = {
+
+      // Given a node and scope name, add a scoping class to each node 
+      // in the tree. This facilitates transforming css into scoped rules. 
+      dom: function(node, scope, useAttr, shouldRemoveScope) {
+        this._transformDom(node, scope || '', useAttr, shouldRemoveScope);
       },
 
-      _rulesForStyle: function(style) {
-        if (!style.__cssRules) {
-          style.__cssRules = Polymer.StyleUtil.parser.parse(style.textContent);
+      _transformDom: function(node, selector, useAttr, shouldRemoveScope) {
+        if (node.setAttribute) {
+          this.element(node, selector, useAttr, shouldRemoveScope);
         }
-        return style.__cssRules;
+        var c$ = Polymer.dom(node).childNodes;
+        for (var i=0; i<c$.length; i++) {
+          this._transformDom(c$[i], selector, useAttr, shouldRemoveScope);
+        }
       },
 
-      _forRulesInStyles: function(styles, cb) {
-        if (styles) {
-          for (var i=0, l=styles.length, s; (i<l) && (s=styles[i]); i++) {
-            Polymer.StyleUtil.forEachStyleRule(this._rulesForStyle(s), cb);
+      element: function(element, scope, useAttr, shouldRemoveScope) {
+        if (useAttr) {
+          if (shouldRemoveScope) {
+            element.removeAttribute(SCOPE_NAME);
+          } else {
+            element.setAttribute(SCOPE_NAME, scope);
+          }
+        } else {
+          // note: if using classes, we add both the general 'style-scope' class
+          // as well as the specific scope. This enables easy filtering of all
+          // `style-scope` elements
+          if (scope) {
+            // note: svg on IE does not have classList so fallback to class
+            if (element.classList) {
+              if (shouldRemoveScope) {
+                element.classList.remove(SCOPE_NAME);
+                element.classList.remove(scope);
+              } else {
+                element.classList.add(SCOPE_NAME);
+                element.classList.add(scope);
+              }
+            } else if (element.getAttribute) {
+              var c = element.getAttribute(CLASS);
+              if (shouldRemoveScope) {
+                element.setAttribute(CLASS, c.replace(SCOPE_NAME, '')
+                  .replace(scope, ''));
+              } else {
+                element.setAttribute(CLASS, c + (c ? ' ' : '') + 
+                  SCOPE_NAME + ' ' + scope);
+              }
+            }
           }
         }
       },
 
-      // instance-y
-      _stampTemplate: function() {
-        if (this._encapsulateStyle) {
-          Polymer.StyleTransformer.host(this, this.is);
+      elementStyles: function(element, callback) {
+        var styles = element._styles;
+        var cssText = '';
+        for (var i=0, l=styles.length, s, text; (i<l) && (s=styles[i]); i++) {
+          var rules = styleUtil.rulesForStyle(s);
+          cssText += nativeShadow ?
+            styleUtil.toCssText(rules, callback) :
+            this.css(rules, element.is, element.extends, callback,
+            element._scopeCssViaAttr) + '\n\n';
         }
-        baseStampTemplate.call(this);
+        return cssText.trim();
       },
 
+      // Given a string of cssText and a scoping string (scope), returns
+      // a string of scoped css where each selector is transformed to include
+      // a class created from the scope. ShadowDOM selectors are also transformed
+      // (e.g. :host) to use the scoping selector.
+      css: function(rules, scope, ext, callback, useAttr) {
+        var hostScope = this._calcHostScope(scope, ext);
+        scope = this._calcElementScope(scope, useAttr);
+        var self = this;
+        return styleUtil.toCssText(rules, function(rule) {
+          if (!rule.isScoped) {
+            self.rule(rule, scope, hostScope);
+            rule.isScoped = true;
+          }
+          if (callback) {
+            callback(rule, scope, hostScope);
+          }
+        });
+      },
+
+      _calcElementScope: function (scope, useAttr) {
+        if (scope) {
+          return useAttr ?
+            CSS_ATTR_PREFIX + scope + CSS_ATTR_SUFFIX :
+            CSS_CLASS_PREFIX + scope;
+        } else {
+          return '';
+        }
+      },
+
+      _calcHostScope: function(scope, ext) {
+        return ext ? '[is=' +  scope + ']' : scope;
+      },
+
+      rule: function (rule, scope, hostScope) {
+        this._transformRule(rule, this._transformComplexSelector,
+          scope, hostScope);
+      },
+
+      // transforms a css rule to a scoped rule.
+      _transformRule: function(rule, transformer, scope, hostScope) {
+        var p$ = rule.selector.split(COMPLEX_SELECTOR_SEP);
+        for (var i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
+          p$[i] = transformer.call(this, p, scope, hostScope);
+        }
+        rule.selector = p$.join(COMPLEX_SELECTOR_SEP);
+      },
+
+      _transformComplexSelector: function(selector, scope, hostScope) {
+        var stop = false;
+        var self = this;
+        selector = selector.replace(SIMPLE_SELECTOR_SEP, function(m, c, s) {
+          if (!stop) {
+            var o = self._transformCompoundSelector(s, c, scope, hostScope);
+            if (o.stop) {
+              stop = true;
+            }
+            c = o.combinator;
+            s = o.value;  
+          }
+          return c + s;
+        });
+        return selector;
+      },
+
+      _transformCompoundSelector: function(selector, combinator, scope, hostScope) {
+        // replace :host with host scoping class
+        var jumpIndex = selector.search(SCOPE_JUMP);
+        if (selector.indexOf(HOST) >=0) {
+          // :host(...)
+          selector = selector.replace(HOST_PAREN, function(m, host, paren) {
+            return hostScope + paren;
+          });
+          // now normal :host
+          selector = selector.replace(HOST, hostScope);
+        // replace other selectors with scoping class
+        } else if (jumpIndex !== 0) {
+          selector = scope ? this._transformSimpleSelector(selector, scope) : 
+            selector;
+        }
+        // remove left-side combinator when dealing with ::content.
+        if (selector.indexOf(CONTENT) >= 0) {
+          combinator = '';
+        }
+        // process scope jumping selectors up to the scope jump and then stop
+        // e.g. .zonk ::content > .foo ==> .zonk.scope > .foo
+        var stop;
+        if (jumpIndex >= 0) {
+          selector = selector.replace(SCOPE_JUMP, ' ');
+          stop = true;
+        }
+        return {value: selector, combinator: combinator, stop: stop};
+      },
+
+      _transformSimpleSelector: function(selector, scope) {
+        var p$ = selector.split(PSEUDO_PREFIX);
+        p$[0] += scope;
+        return p$.join(PSEUDO_PREFIX);
+      },
+
+      rootRule: function(rule) {
+        this._transformRule(rule, this._transformRootSelector);
+      },
+
+      _transformRootSelector: function(selector) {
+        return selector.match(SCOPE_JUMP) ?
+          this._transformComplexSelector(selector) :
+          selector.trim() + SCOPE_ROOT_SELECTOR;
+      },
+
+      SCOPE_NAME: 'style-scope'
+    };
+
+    var SCOPE_NAME = api.SCOPE_NAME;
+    var SCOPE_ROOT_SELECTOR = ':not([' + SCOPE_NAME + '])' + 
+      ':not(.' + SCOPE_NAME + ')';
+    var COMPLEX_SELECTOR_SEP = ',';
+    var SIMPLE_SELECTOR_SEP = /(^|[\s>+~]+)([^\s>+~]+)/g;
+    var HOST = ':host';
+    // NOTE: this supports 1 nested () pair for things like 
+    // :host(:not([selected]), more general support requires
+    // parsing which seems like overkill
+    var HOST_PAREN = /(\:host)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/g;
+    var CONTENT = '::content';
+    var SCOPE_JUMP = /\:\:content|\:\:shadow|\/deep\//;
+    var CSS_CLASS_PREFIX = '.';
+    var CSS_ATTR_PREFIX = '[' + SCOPE_NAME + '~=';
+    var CSS_ATTR_SUFFIX = ']';
+    var PSEUDO_PREFIX = ':';
+    var CLASS = 'class';
+
+    // exports
+    return api;
+
+  })();
+
+</script>
+<script>
+
+Polymer.StyleExtends = (function() {
+
+  var styleUtil = Polymer.StyleUtil;
+
+  return {
+    
+    hasExtends: function(cssText) {
+      return Boolean(cssText.match(this.rx.EXTEND));
+    },
+
+    transform: function(style) {
+      var rules = styleUtil.rulesForStyle(style);
+      var self = this;
+      styleUtil.forEachStyleRule(rules, function(rule) {
+        var map = self._mapRule(rule);
+        if (rule.parent) {
+          var m;
+          while (m = self.rx.EXTEND.exec(rule.cssText)) {
+            var extend = m[1];
+            var extendor = self._findExtendor(extend, rule);
+            if (extendor) {
+              self._extendRule(rule, extendor);
+            }
+          }
+        }
+        rule.cssText = rule.cssText.replace(self.rx.EXTEND, '');
+      });
+      // strip unused % selectors
+      return styleUtil.toCssText(rules, function(rule) {
+        if (rule.selector.match(self.rx.STRIP)) {
+          rule.cssText = '';
+        }
+      }, true);
+    },
+
+    _mapRule: function(rule) {
+      if (rule.parent) {
+        var map = rule.parent.map || (rule.parent.map = {});
+        var parts = rule.selector.split(',');
+        for (var i=0, p; i < parts.length; i++) {
+          p = parts[i];
+          map[p.trim()] = rule;
+        }
+        return map;
+      }
+    },
+
+    _findExtendor: function(extend, rule) {
+      return rule.parent && rule.parent.map && rule.parent.map[extend] ||
+        this._findExtendor(extend, rule.parent);
+    },
+
+    _extendRule: function(target, source) {
+      if (target.parent !== source.parent) {
+        this._cloneAndAddRuleToParent(source, target.parent);
+      }
+      target.extends = target.extends || (target.extends = []);
+      target.extends.push(source);
+      // TODO: this misses `%foo, .bar` as an unetended selector but
+      // this seems rare and could possibly be unsupported.
+      source.selector = source.selector.replace(this.rx.STRIP, '');
+      source.selector = (source.selector && source.selector + ',\n') + 
+        target.selector;
+      if (source.extends) {
+        source.extends.forEach(function(e) {
+          this._extendRule(target, e);
+        }, this);
+      }
+    },
+
+    _cloneAndAddRuleToParent: function(rule, parent) {
+      rule = Object.create(rule);
+      rule.parent = parent;
+      if (rule.extends) {
+        rule.extends = rule.extends.slice();
+      }
+      parent.rules.push(rule);
+    },
+
+    rx: {
+      EXTEND: /@extends\(([^)]*)\)\s*?;/gim,
+      STRIP: /%[^,]*$/
+    }
+
+  };
+
+})();
+</script>
+<script>
+
+  (function() {
+
+    var prepElement = Polymer.Base._prepElement;
+    var nativeShadow = Polymer.Settings.useNativeShadow;
+
+    var styleUtil = Polymer.StyleUtil;
+    var styleTransformer = Polymer.StyleTransformer;
+    var styleExtends = Polymer.StyleExtends;
+
+    Polymer.Base._addFeature({
+
+      _prepElement: function(element) {
+        if (this._encapsulateStyle) {
+          styleTransformer.element(element, this.is,
+            this._scopeCssViaAttr);
+        }
+        prepElement.call(this, element);
+      },
+
+      _prepStyles: function() {
+        if (this._encapsulateStyle === undefined) {
+          this._encapsulateStyle = !nativeShadow && 
+            Boolean(this._template);
+        }
+        this._styles = this._collectStyles();
+        var cssText = styleTransformer.elementStyles(this);
+        if (cssText && this._template) {
+          var style = styleUtil.applyCss(cssText, this.is, 
+            nativeShadow ? this._template.content : null);
+          // keep track of style when in document scope (polyfill) so we can
+          // attach property styles after it.
+          if (!nativeShadow) {
+            this._scopeStyle = style;
+          }
+        }
+      },
+
+      // search for extra style modules via `styleModules`
+      // TODO(sorvell): consider dropping support for `styleModules`
+      _collectStyles: function() {
+        var styles = [];
+        var cssText = '', m$ = this.styleModules;
+        if (m$) {
+          for (var i=0, l=m$.length, m; (i<l) && (m=m$[i]); i++) {
+            cssText += styleUtil.cssFromModule(m);
+          }
+        }
+        cssText += styleUtil.cssFromModule(this.is);
+        if (cssText) {
+          var style = document.createElement('style');
+          style.textContent = cssText;  
+          // extends!!
+          if (styleExtends.hasExtends(style.textContent)) {
+            cssText = styleExtends.transform(style);
+          }
+          styles.push(style);
+        }
+        return styles;
+      },
+
+      // instance-y
       // add scoping class whenever an element is added to localDOM
       _elementAdd: function(node) {
         if (this._encapsulateStyle && !node.__styleScoped) {
-          Polymer.StyleTransformer.dom(node, this.is, this._scopeCssViaAttr);
+          styleTransformer.dom(node, this.is, this._scopeCssViaAttr);
         }
       },
 
       // remove scoping class whenever an element is removed from localDOM
       _elementRemove: function(node) {
         if (this._encapsulateStyle) {
-          Polymer.StyleTransformer.dom(node, this.is, this._scopeCssViaAttr, true);
+          styleTransformer.dom(node, this.is, this._scopeCssViaAttr, true);
         }
       },
 
@@ -9059,8 +9235,6 @@ Polymer.Debounce = (function() {
 
     });
 
-    var STYLES_SELECTOR = 'style, link[rel=import][type~=css]';
-
   })();
 
 </script>
@@ -9069,63 +9243,99 @@ Polymer.Debounce = (function() {
   Polymer.StyleProperties = (function() {
 
     var nativeShadow = Polymer.Settings.useNativeShadow;
+    var matchesSelector = Polymer.DomApi.matchesSelector;
+    var styleUtil = Polymer.StyleUtil;
+    var styleTransformer = Polymer.StyleTransformer;
 
     return {
 
-      // decorate rules with property info: whether it produces or consumes them
-      decorateRules: function(rules) {
-        if (rules.properties) {
-          return;
-        }
-        var pp = {};
-        var self = this;
-        Polymer.StyleUtil.forEachStyleRule(rules, function(rule) {
-          var p = self.decorateRule(rule);
-          pp.consumes = pp.consumes || p.consumes;
-          pp.produces = pp.produces || p.produces;
+      // decorates styles with rule info and returns an array of used style
+      // property names
+      decorateStyles: function(styles) {
+        var self = this, props = {};
+        styleUtil.forRulesInStyles(styles, function(rule) {
+          self.decorateRule(rule);
+          self.collectPropertiesInCssText(rule.propertyInfo.cssText, props);
         });
-        rules.properties = pp;
+        // return this list of property names *consumes* in these styles.
+        var names = [];
+        for (var i in props) {
+          names.push(i);
+        }
+        return names;
       },
 
       // decorate a single rule with property info
       decorateRule: function(rule) {
-        if (rule.properties) {
-          return;
+        if (rule.propertyInfo) {
+          return rule.propertyInfo;
         }
-        var cssText = rule.parsedCssText;
-        var rx = this.rx;
-        // NOTE: we support consumption inside mixin assignment
-        // but not production, so strip out {...}
-        var cleanCss = cssText.replace(rx.BRACKETED, '');
-        var p = rule.properties = {
-          produces: cssText.match(rx.VAR_ASSIGN),
-          consumes: cleanCss.match(rx.VAR_USE) || cleanCss.match(rx.MIXIN_USE)
-        };
-        // TODO(sorvell): workaround parser seeing mixins as additional rules
-        if (p.produces) {
+        var info = {}, properties = {};
+        var hasProperties = this.collectProperties(rule, properties);
+        if (hasProperties) {
+          info.properties = properties;
+          // TODO(sorvell): workaround parser seeing mixins as additional rules
           rule.rules = null;
         }
-        return p;
+        info.cssText = this.collectCssText(rule);
+        rule.propertyInfo = info;
+        return info;
       },
 
       // collects the custom properties from a rule's cssText
-      collect: function(rule, properties) {
-        if (rule.properties.produces) {
+      collectProperties: function(rule, properties) {
+        var info = rule.propertyInfo;
+        if (info) {
+          if (info.properties) {
+            Polymer.Base.mixin(properties, info.properties);
+            return true;
+          }
+        } else {
           var m, rx = this.rx.VAR_ASSIGN;
-          // cssText may be modified but in this case
-          // raw version is saved for processing
           var cssText = rule.parsedCssText;
+          var any;
           while (m = rx.exec(cssText)) {
             // note: group 2 is var, 3 is mixin
             properties[m[1]] = (m[2] || m[3]).trim();
+            any = true;
           }
+          return any;
+        }
+      },
+
+      // returns cssText of properties that consume variables/mixins
+      collectCssText: function(rule) {
+        var customCssText = '';
+        var cssText = rule.parsedCssText;
+        // NOTE: we support consumption inside mixin assignment
+        // but not production, so strip out {...}
+        cssText = cssText.replace(this.rx.BRACKETED, '')
+          .replace(this.rx.VAR_ASSIGN, '');
+        var parts = cssText.split(';');
+        for (var i=0, p; i<parts.length; i++) {
+          p = parts[i];
+          if (p.match(this.rx.MIXIN_MATCH) || p.match(this.rx.VAR_MATCH)) {
+            customCssText += p + ';\n';
+          }
+        }
+        return customCssText;
+      },
+
+      collectPropertiesInCssText: function(cssText, props) {
+        var m;
+        while (m = this.rx.VAR_CAPTURE.exec(cssText)) {
+          props[m[1]] = true;
         }
       },
 
       // turns custom properties into realized values.
       reify: function(props) {
-        for (var i in props) {
-          props[i] = this.valueForProperty(props[i], props);
+        // big perf optimization here: reify only *own* properties
+        // since this object has __proto__ of the element's scope properties
+        var names = Object.getOwnPropertyNames(props);
+        for (var i=0, n; i < names.length; i++) {
+          n = names[i];
+          props[n] = this.valueForProperty(props[n], props);
         }
       },
 
@@ -9138,22 +9348,26 @@ Polymer.Debounce = (function() {
       valueForProperty: function(property, props) {
         // case (1) default
         // case (3) defines a mixin and we have to reify the internals
-        if (property && property.indexOf(';') >=0) {
-          property = this.valueForMixin(property, props);
-        } else {
-          // case (2) variable
-          var m = property && property.match(this.rx.VAR_VALUE);
-          if (m) {
-            var value = m[1], def = m[2];
-            property = this.valueForProperty(props[value], props) ||
-              (props[def] ? this.valueForProperty(props[def], props) : def);
+        if (property) {
+          if (property.indexOf(';') >=0) {
+            property = this.valueForProperties(property, props);
+          } else {
+            // case (2) variable
+            var self = this;
+            var fn = function(all, prefix, value, fallback) {
+              return prefix + (self.valueForProperty(props[value], props) ||
+                (props[fallback] ? 
+                self.valueForProperty(props[fallback], props) : 
+                fallback));
+            };
+            property = property.replace(this.rx.VAR_MATCH, fn);
           }
         }
-        return property && property.trim();
+        return property && property.trim() || '';
       },
-      
+
       // note: we do not yet support mixin within mixin
-      valueForMixin: function(property, props) {
+      valueForProperties: function(property, props) {
         var parts = property.split(';');
         for (var i=0, p, m; (i<parts.length) && (p=parts[i]); i++) {
           m = p.match(this.rx.MIXIN_MATCH);
@@ -9175,297 +9389,414 @@ Polymer.Debounce = (function() {
         return parts.join(';');
       },
 
-      // TODO(srovell): make this go away by pre-processing rules
-      // to contain specifically only the css that consumes properties 
-      // for use here.
-      //
-      // returns cssText with properties applied;
-      // if no properties apply, returns nothing
       applyProperties: function(rule, props) {
-        var cssText = rule.parsedCssText;
         var output = '';
         // dynamically added sheets may not be decorated so ensure they are.
         if (!rule.properties) {
           this.decorateRule(rule);
         }
-        if (rule.properties.consumes) {
-          var m, v;
-          // cssText including {...} will confuse this function so we lim it
-          cssText = cssText.replace(this.rx.BRACKETED, '');
-          // e.g. color: var(--color);
-          while (m = this.rx.VAR_USE.exec(cssText)) {
-            v = this.valueForProperty(m[2], props);
-            if (v) {
-              output += '\t' + m[1].trim() + ': ' + this.propertyToCss(v);
-            }
-          }
-          // e.g. @apply(--stuff);
-          while (m = this.rx.MIXIN_USE.exec(cssText)) {
-            v = m[1];
-            if (v) {
-              var parts = v.split(' ');
-              for (var i=0, p; i < parts.length; i++) {
-                p = props[parts[i].trim()];
-                if (p) {
-                  output += '\t' + this.propertyToCss(p);
-                }
-              }
-            }
-          }
+        if (rule.propertyInfo.cssText) {
+          output = this.valueForProperties(rule.propertyInfo.cssText, props);
         }
         rule.cssText = output;
       },
 
-      propertyToCss: function(property) {
-        var p = property.trim();
-        p = p[p.length-1] === ';' ? p : p + ';';
-        return p + '\n';
-      },
-
-      rx: {
-        VAR_ASSIGN: /(?:^|;\s*)(--[^\:;]*?):\s*?(?:([^;{]*?)|{([^}]*)})(?=;)/gim,
-        VAR_VALUE: /^var\([\s]*([^,)]*)[\s]*,?[\s]*([^,)]*)[\s]*?\);?/,
-        VAR_USE: /(?:^|[;}\s])([^;{}]*?):[\s]*?(var\([^)]*?\))/gim,
-        MIXIN_USE: /@apply\(([^)]*)\);?/gim, 
-        MIXIN_MATCH: /@apply\(([^)]*)\);?/im, 
-        BRACKETED: /\{[^}]*\}/g
-      }
-    };
-
-
-  })();
-
-</script><script>
-
-  (function() {
-    
-    var style = document.createElement('style'); 
-    var properties;
-
-    function applyCss(cssText) {
-      style.textContent += cssText;
-      properties = null;
-      // TODO(sorvell): make this lazy at the point of consumption
-      // or better yet, pass in pre-parsed rules here.
-      style.__cssRules =
-        Polymer.StyleUtil.parser.parse(style.textContent);
-      Polymer.StyleProperties.decorateRules(style.__cssRules);
-    }
-
-    function getProperties() {
-      if (!properties) {
-        properties = {};
-        Polymer.StyleUtil.forEachStyleRule(style.__cssRules, 
-          function(rule) {
-            Polymer.Base._rootCustomPropertiesFromRule(properties, rule);
-        });
-        Polymer.StyleProperties.reify(properties);
-      }
-      return properties;
-    }
-
-    applyCss('');
-
-    // exports
-    Polymer.StyleDefaults = {
-      applyCss: applyCss,
-      style: style,
-      styles: [style],
-      getProperties: getProperties
-    };
-
-  })();
-</script>
-<script>
-  (function() {
-
-    var baseAttachedCallback = Polymer.Base.attachedCallback;
-    var baseSerializeValueToAttribute = Polymer.Base.serializeValueToAttribute;
-    var prepTemplate = Polymer.Base._prepTemplate;
-
-    var propertyUtils = Polymer.StyleProperties;
-
-    var nativeShadow = Polymer.Settings.useNativeShadow;
-
-    Polymer.Base._addFeature({
-
-      // TODO(sorvell): consider tracking which rules have properties so that
-      // instances can skip those that don't.
-      _prepTemplate: function() {
-        prepTemplate.call(this);
-        // determine if element contains x-scope styling
-        var consumes;
-        if (this._styles) {
-          this._styles.forEach(function(s) {
-            var rules = this._rulesForStyle(s);
-            propertyUtils.decorateRules(rules);
-            if (rules.properties.consumes) {
-              consumes = true;
-            }
-          }, this);
-        }
-        this._usesStyleProperties = consumes;
-      },
-
-      attachedCallback: function() {
-        baseAttachedCallback.call(this);
-        // note: do this once automatically,
-        // then requires calling `updateStyles`
-        if (!this._xScopeSelector) {
-          this._updateOwnStyles();
-        }
-      },
-
-      _updateOwnStyles: function() {
-        if (this._usesStyleProperties) {
-          this._styleProperties = this._computeStyleProperties();
-          this._applyStyleProperties(this._styleProperties);
-        }
-      },
-
-      _computeStyleProperties: function() {
-        var props = {};
-        // properties come from host/defaults
-        this.mixin(props, this._computeScopeStyleProperties());
-        this.mixin(props, this._computeOwnStyleProperties());
-        propertyUtils.reify(props);
-        return props;
-      },
-
-      _computeScopeStyleProperties: function() {
-        var host = this.domHost;
-        // ensure host has styleProperties
-        if (host && !host._styleProperties) {
-          host._styleProperties = host._computeStyleProperties();
-        }
-        // get props and styles from host or defaults
-        var styles = host ? host._styles : Polymer.StyleDefaults.styles;
-        var props = Object.create(host ? host._styleProperties :
-          Polymer.StyleDefaults.getProperties());
-        // now match this element in these styles and add those properties
-        var cb = this._elementCustomPropertiesFromRule.bind(this, props, this);
-        this._forRulesInStyles(styles, cb);
-        return props;
-      },
-
-      _computeOwnStyleProperties: function() {
-        var props = {};
-        var cb = this._rootCustomPropertiesFromRule.bind(this, props);
-        this._forRulesInStyles(this._styles, cb);
-        return props;
-      },
-
-      // Test if a rule matches the given `element` and if so,
+      // Test if the rules in these styles matche the given `element` and if so,
       // collect any custom properties into `props`.
-      _elementCustomPropertiesFromRule: function(props, element, rule) {
-        if (element && this.elementMatches(rule.selector, element)) {
-          propertyUtils.collect(rule, props);
-        }
+      propertyDataFromStyles: function(styles, element) {
+        var props = {}, self = this;
+        // generates a unique key for these matches
+        var o = [], i = 0;
+        styleUtil.forRulesInStyles(styles, function(rule) {
+          // TODO(sorvell): we could trim the set of rules at declaration 
+          // time to only include ones that have properties
+          if (!rule.propertyInfo) {
+            self.decorateRule(rule);
+          }
+          if (element && rule.propertyInfo.properties &&
+              matchesSelector.call(element, rule.selector)) {
+            self.collectProperties(rule, props);
+            // produce numeric key for these matches for lookup
+            addToBitMask(i, o);
+          }
+          i++;
+        });
+        return {properties: props, key: o};
       },
 
-      // TODO(sorvell): optimization, this collection could
-      // be done at prototype time!
-      //
       // Test if a rule matches root crteria (:host or :root) and if so,
       // collect any custom properties into `props`.
       // these rules may already be shimmed and it's $ to reparse,
       // so we check `is` value as a fallback
-      _rootCustomPropertiesFromRule: function(props, rule) {
-        var s = rule.parsedSelector;
-        if (s === HOST || s === ROOT) {
-          propertyUtils.collect(rule, props);
+      rootPropertiesFromStyles: function(styles) {
+        if (!styles._rootStyleProperties) {
+          var props = {}, self = this;
+          styleUtil.forRulesInStyles(styles, function(rule) {
+            if (!rule.propertyInfo) {
+              self.decorateRule(rule);
+            }
+            var s = rule.parsedSelector;
+            if (s === self.HOST || s === self.ROOT) {
+              self.collectProperties(rule, props);
+            }
+          });
+          styles._rootStyleProperties = props;
         }
+        return styles._rootStyleProperties;
       },
 
-      // apply styles
-      _applyStyleProperties: function(bag) {
-        var s$ = this._styles;
-        if (s$) {
-          var style = styleFromCache(this.is, bag, s$);
-          var old = this._xScopeSelector;
-          this._ensureScopeSelector(style ? style._scope : null);
-          if (!style) {
-            var cb = this._applyPropertiesToRule.bind(this, bag);
-            var cssText = this._transformStyles(s$, cb);
-            style = cssText ? this._applyCustomCss(cssText) : {};
-            cacheStyle(this.is, style, this._xScopeSelector,
-              this._styleProperties, s$);
-          } else if (nativeShadow) {
-            this._applyCustomCss(style.textContent);
+      transformStyles: function(element, properties, scopeSelector) {
+        var self = this;
+        var hostRx = new RegExp(this.rx.HOST_PREFIX + element.is + 
+          this.rx.HOST_SUFFIX);
+        return styleTransformer.elementStyles(element, function(rule) {
+          self.applyProperties(rule, properties);
+          if (rule.cssText && !nativeShadow) {
+            self._scopeSelector(rule, hostRx, element.is, 
+              element._scopeCssViaAttr, scopeSelector);
           }
-          if (style.textContent || old /*&& !nativeShadow*/) {
-            this._applyXScopeSelector(this._xScopeSelector, old);
-          }
-        }
-      },
-
-      _applyPropertiesToRule: function(properties, rule) {
-        propertyUtils.applyProperties(rule, properties);
-        if (rule.cssText && !nativeShadow) {
-          this._scopifyRule(rule);
-        }
+        });
       },
 
       // Strategy: x scope shim a selector e.g. to scope `.x-foo-42` (via classes):
       // non-host selector: .a.x-foo -> .x-foo-42 .a.x-foo
       // host selector: x-foo.wide -> x-foo.x-foo-42.wide
-      _scopifyRule: function(rule) {
+      _scopeSelector: function(rule, hostRx, is, viaAttr, scopeId) {
         rule.transformedSelector = rule.transformedSelector || rule.selector;
         var selector = rule.transformedSelector;
-        var host = this.is;
-        var rx = new RegExp(HOST_SELECTOR_PREFIX + host + HOST_SELECTOR_SUFFIX);
+        var scope = viaAttr ? '[' + styleTransformer.SCOPE_NAME + '~=' + 
+          scopeId + ']' : 
+          '.' + scopeId;
         var parts = selector.split(',');
-        var scope = this._scopeCssViaAttr ?
-          SCOPE_PREFIX + this._xScopeSelector + SCOPE_SUFFIX :
-          '.' + this._xScopeSelector;
         for (var i=0, l=parts.length, p; (i<l) && (p=parts[i]); i++) {
-          parts[i] = p.match(rx) ?
-            p.replace(host, host + scope) :
+          parts[i] = p.match(hostRx) ?
+            p.replace(is, is + scope) :
             scope + ' ' + p;
         }
         rule.selector = parts.join(',');
       },
 
-      _applyXScopeSelector: function(selector, old) {
-        var c = this._scopeCssViaAttr ? this.getAttribute(SCOPE_NAME) :
-          this.className;
+      applyElementScopeSelector: function(element, selector, old, viaAttr) {
+        var c = viaAttr ? element.getAttribute(styleTransformer.SCOPE_NAME) :
+          element.className;
         v = old ? c.replace(old, selector) :
-          (c ? c + ' ' : '') + XSCOPE_NAME + ' ' + selector;
+          (c ? c + ' ' : '') + this.XSCOPE_NAME + ' ' + selector;
         if (c !== v) {
-          if (this._scopeCssViaAttr) {
-            this.setAttribute(SCOPE_NAME, v);
+          if (viaAttr) {
+            element.setAttribute(styleTransformer.SCOPE_NAME, v);
           } else {
-            this.className = v;
+            element.className = v;
           }
         }
       },
 
-      _xScopeCount: 0,
-
-      _ensureScopeSelector: function(selector) {
-        selector = selector || (this.is + '-' +
-          (this.__proto__._xScopeCount++));
-        this._xScopeSelector = selector;
+      applyElementStyle: function(element, properties, selector, style) {
+        // calculate cssText to apply
+        var cssText = style ? style.textContent || '' : 
+          this.transformStyles(element, properties, selector);  
+        // if shady and we have a cached style that is not style, decrement
+        var s = element._customStyle;
+        if (s && !nativeShadow && (s !== style)) {
+          s._useCount--;
+          if (s._useCount <= 0) {
+            s.parentNode.removeChild(s);
+          }
+        }
+        // apply styling always under native or if we generated style
+        // or the cached style is not in document(!)
+        if (nativeShadow || (!style || !style.parentNode)) {
+          // update existing style only under native
+          if (nativeShadow && element._customStyle) {
+            element._customStyle.textContent = cssText;
+            style = element._customStyle;
+          // otherwise, if we have css to apply, do so
+          } else if (cssText) {
+            // apply css after the scope style of the element to help with
+            // style predence rules.
+            style = styleUtil.applyCss(cssText, selector, 
+              nativeShadow ? element.root : null, element._scopeStyle);
+          }
+        }
+        // ensure this style is our custom style and increment its use count.
+        if (style) {
+          style._useCount = style._useCount || 0;
+          // increment use count if we changed styles
+          if (element._customStyle != style) {
+            style._useCount++;
+          }
+          element._customStyle = style;
+        }
+        return style;
       },
 
-      _applyCustomCss: function(cssText) {
-        if (this._customStyle) {
-          this._customStyle.textContent = cssText;
-        } else if (cssText) {
-          this._customStyle = Polymer.StyleUtil.applyCss(cssText,
-            this._xScopeSelector,
-            nativeShadow ? this.root : null);
-        }
-        return this._customStyle;
+      rx: {
+        VAR_ASSIGN: /(?:^|;\s*)(--[^\:;]*?):\s*?(?:([^;{]*?)|{([^}]*)})(?=;)/gim,
+        MIXIN_MATCH: /(?:^|\W+)@apply[\s]*\(([^)]*)\);?/im, 
+        VAR_MATCH: /(^|\W+)var\([\s]*([^,)]*)[\s]*,?[\s]*([^,)]*)[\s]*?\)/gim,
+        VAR_CAPTURE: /\([\s]*(--[^,\s)]*)(?:,[\s]*(--[^,\s)]*))?(?:\)|,)/gim,
+        BRACKETED: /\{[^}]*\}/g,
+        HOST_PREFIX: '(?:^|[^.])',
+        HOST_SUFFIX: '($|[.:[\\s>+~])'
       },
 
-      _scopeElementClass: function(element, selector) {
-        if (!nativeShadow && !this._scopeCssViaAttr) {
-          selector += (selector ? ' ' : '') + SCOPE_NAME + ' ' + this.is +
-            (element._xScopeSelector ? ' ' +  XSCOPE_NAME + ' ' +
-            element._xScopeSelector : '');
+      HOST: ':host',
+      ROOT: ':root',
+      XSCOPE_NAME: 'x-scope'
+
+    };
+
+    function addToBitMask(n, bits) {
+      var o = parseInt(n / 32);
+      var v = 1 << (n % 32);
+      bits[o] = (bits[o] || 0) | v;
+    }
+
+  })();
+
+</script><script>
+
+  Polymer.StyleDefaults = (function() {
+
+    var styleProperties = Polymer.StyleProperties;
+    var styleUtil = Polymer.StyleUtil;
+
+    var style = document.createElement('style') 
+    
+    var api = {
+
+      style: style,
+      _styles: [style],
+      _properties: null,
+
+      applyCss: function(cssText) {
+        this.style.textContent += cssText;
+        styleUtil.clearStyleRules(this.style);
+        this._properties = null;
+      },
+
+      // NOTE: this object can be used as a styling scope so it has an api
+      // similar to that of an element wrt style properties
+      get _styleProperties() {
+        if (!this._properties) {
+          // force rules to reparse since they may be out of date
+          styleProperties.decorateStyles(this._styles);
+          // NOTE: reset cache for own properties; it may have been set when
+          // an element in an import applied styles (e.g. custom-style)
+          this._styles._rootStyleProperties = null;
+          this._properties = styleProperties
+            .rootPropertiesFromStyles(this._styles);
         }
-        return selector;
+        return this._properties;
+      },
+
+      _needsStyleProperties: function() {},
+
+      _computeStyleProperties: function() {
+        return this._styleProperties;
+      }
+
+    };
+
+    // exports
+    return api;
+
+  })();
+</script>
+<script>
+(function() {
+
+  Polymer.StyleCache = function() {
+    this.cache = {};
+  }
+
+  Polymer.StyleCache.prototype = {
+    
+    MAX: 100,
+
+    store: function(is, data, keyValues, keyStyles) {
+      data.keyValues = keyValues;
+      data.styles = keyStyles;
+      var s$ = this.cache[is] = this.cache[is] || [];
+      s$.push(data);
+      if (s$.length > this.MAX) {
+        s$.shift();
+      }
+    },
+
+    retrieve: function(is, keyValues, keyStyles) {
+      var cache = this.cache[is];
+      if (cache) {
+        // look through cache backwards as most recent push is last.
+        for (var i=cache.length-1, data; i >= 0; i--) {
+          data = cache[i];
+          if (keyStyles === data.styles &&
+              this._objectsEqual(keyValues, data.keyValues)) {
+            return data;
+          }
+        }
+      }
+    },
+
+    clear: function() {
+      this.cache = {};
+    },
+
+    // note, this is intentially limited to support just the cases we need
+    // right now. The objects we're checking here are either objects that must 
+    // always have the same keys OR arrays.
+    _objectsEqual: function(target, source) {
+      for (var i in target) {
+        if (target[i] !== source[i]) {
+          return false;
+        }
+      }
+      if (Array.isArray(target)) {
+        return target.length === source.length;
+      }
+      return true;
+    }
+
+  };
+
+})();
+</script><script>
+  (function() {
+
+    var attachedCallback = Polymer.Base.attachedCallback;
+    var serializeValueToAttribute = Polymer.Base.serializeValueToAttribute;
+
+    var propertyUtils = Polymer.StyleProperties;
+    var styleTransformer = Polymer.StyleTransformer;
+    var styleUtil = Polymer.StyleUtil;
+    var styleDefaults = Polymer.StyleDefaults;
+
+    var nativeShadow = Polymer.Settings.useNativeShadow;
+
+    Polymer.Base._addFeature({
+
+      _prepStyleProperties: function() {
+        // note: an element should produce an x-scope stylesheet 
+        // if it has any _stylePropertyNames
+        this._ownStylePropertyNames = this._styles ? 
+          propertyUtils.decorateStyles(this._styles) :
+          [];
+      },
+
+      // here we have an instance time spot to put custom property data
+      _setupStyleProperties: function() {
+        this.customStyle = {};
+      },
+
+      _needsStyleProperties: function() {
+        return Boolean(this._ownStylePropertyNames &&
+          this._ownStylePropertyNames.length);
+      },
+
+      attachedCallback: function() {
+        // note: do this once automatically,
+        // then requires calling `updateStyles`
+        if (!this._scopeSelector && this._needsStyleProperties()) {
+          this._updateStyleProperties();
+        }
+        attachedCallback.call(this);
+      },
+
+      _updateStyleProperties: function() {
+        var info, scope = this.domHost || styleDefaults;
+        // install cache in host if it doesn't exist.
+        if (!scope._styleCache) {
+          scope._styleCache = new Polymer.StyleCache();
+        }
+        var scopeData = propertyUtils
+          .propertyDataFromStyles(scope._styles, this);
+        // look in scope cache
+        info = scope._styleCache.retrieve(this.is, scopeData.key, 
+          this._styles);
+        // compute style properties (fast path, if cache hit)
+        var scopeCached = Boolean(info);
+        if (scopeCached) {
+          // when scope cached, we can safely take style propertis out of the
+          // scope cache because they are only for this scope.
+          this._styleProperties = info._styleProperties;
+        } else {
+          this._computeStyleProperties(scopeData.properties);  
+        }
+        this._computeOwnStyleProperties();
+        // cache miss, do work!
+        if (!scopeCached) {
+          // and look in 2ndary global cache
+          info = styleCache.retrieve(this.is, 
+            this._ownStyleProperties, this._styles);
+        }
+        var globalCached = Boolean(info) && !scopeCached;
+        // now we have properties and a cached style if one 
+        // is available.
+        style = this._applyStyleProperties(info);
+        // no cache so store in cache
+        //console.warn(this.is, scopeCached, globalCached);
+        if (!scopeCached) {
+          // create an info object for caching
+          info = {
+            style: style,
+            _scopeSelector: this._scopeSelector,
+            _styleProperties: this._styleProperties
+          }
+          scope._styleCache.store(this.is, info, scopeData.key, this._styles);
+          if (!globalCached) {
+            // save in global cache
+            styleCache.store(this.is, Object.create(info), this._ownStyleProperties,
+            this._styles);  
+          }
+        }
+      },
+
+      _computeStyleProperties: function(scopeProps) {
+        // get scope and make sure it has properties
+        var scope = this.domHost || styleDefaults;
+        // force scope to compute properties if they don't exist or if forcing
+        // and it doesn't need properties
+        if (!scope._styleProperties) {
+          scope._computeStyleProperties();
+        }
+        // start with scope style properties
+        var props = Object.create(scope._styleProperties);
+        // mixin properties matching this element in scope
+        scopeProps = scopeProps || 
+          propertyUtils.propertyDataFromStyles(scope._styles, this).properties;
+        this.mixin(props, scopeProps);
+        // finally mixin properties inherent to this element
+        this.mixin(props, propertyUtils.rootPropertiesFromStyles(this._styles));
+        this.mixin(props, this.customStyle);
+        // reify properties (note: only does own properties)
+        propertyUtils.reify(props);
+        this._styleProperties = props;
+      },
+
+      _computeOwnStyleProperties: function() {
+        var props = {};
+        for (var i=0, n; i < this._ownStylePropertyNames.length; i++) {
+          n = this._ownStylePropertyNames[i];
+          props[n] = this._styleProperties[n];
+        }
+        this._ownStyleProperties = props;
+      },
+
+      _scopeCount: 0,
+
+      _applyStyleProperties: function(info) {
+        // update scope selector (needed for style transformation)
+        var oldScopeSelector = this._scopeSelector;
+        // note, the scope selector is incremented per class counter
+        this._scopeSelector = info ? info._scopeSelector : 
+          this.is + '-' + this.__proto__._scopeCount++;
+        style = propertyUtils.applyElementStyle(this, 
+          this._styleProperties, this._scopeSelector, info && info.style);
+        // apply scope selector (iff we have some scoped css)
+        if ((style || oldScopeSelector) && !nativeShadow) {
+          propertyUtils.applyElementScopeSelector(this, this._scopeSelector, 
+            oldScopeSelector, this._scopeCssViaAttr);
+        }
+        return style || {};
       },
 
       // override to ensure whenever classes are set, we need to shim them.
@@ -9479,20 +9810,36 @@ Polymer.Debounce = (function() {
             value = host._scopeElementClass(node, value);
           }
         }
-        baseSerializeValueToAttribute.call(this, value, attribute, node);
+        // note: using Polymer.dom here ensures that any attribute sets
+        // will provoke distribution if necessary
+        node = Polymer.dom(node || this);
+        serializeValueToAttribute.call(this, value, attribute, node);
+      },
+
+      _scopeElementClass: function(element, selector) {
+        if (!nativeShadow && !this._scopeCssViaAttr) {
+          selector += (selector ? ' ' : '') + SCOPE_NAME + ' ' + this.is +
+            (element._scopeSelector ? ' ' +  XSCOPE_NAME + ' ' +
+            element._scopeSelector : '');
+        }
+        return selector;
       },
 
       updateStyles: function() {
-        this._updateOwnStyles();
-        this._updateRootStyles(this.root);
-      },
-
-      updateHostStyles: function() {
-        var host = Polymer.dom(this).getOwnerRoot() || this.dataHost;
-        if (host) {
-          host.updateStyles();
-        } else {
-          this._updateRootStyles(document);
+        if (this.isAttached) {
+          // skip applying properties to self if not used
+          if (this._needsStyleProperties()) {
+            this._updateStyleProperties();
+          // when an element doesn't use style properties, its own properties
+          // should be invalidated so elements down the tree update ok.
+          } else {
+            this._styleProperties = null;
+          }
+          if (this._styleCache) {
+            this._styleCache.clear();
+          }
+          // always apply properties to root
+          this._updateRootStyles();
         }
       },
 
@@ -9515,53 +9862,15 @@ Polymer.Debounce = (function() {
      * to update styling.
      */
     Polymer.updateStyles = function() {
+      styleDefaults._styleCache.clear();
       Polymer.Base._updateRootStyles(document);
     };
 
-    var styleCache = {};
-    function cacheStyle(is, style, scope, bag, styles) {
-      style._scope = scope;
-      style._properties = bag;
-      style._styles = styles;
-      var s$ = styleCache[is] = styleCache[is] || [];
-      s$.push(style);
-    }
+    var styleCache = new Polymer.StyleCache();
+    Polymer.customStyleCache = styleCache;
 
-    function styleFromCache(is, bag, checkStyles) {
-      var styles = styleCache[is];
-      if (styles) {
-        for (var i=0, s; i < styles.length; i++) {
-          s = styles[i];
-          if (objectsEqual(bag, s._properties) &&
-            objectsEqual(checkStyles,  s._styles)) {
-            return s;
-          }
-        }
-      }
-    }
-
-    function objectsEqual(a, b) {
-      for (var i in a) {
-        if (a[i] !== b[i]) {
-          return false;
-        }
-      }
-      for (var i in b) {
-        if (a[i] !== b[i]) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    var HOST = ':host';
-    var ROOT = ':root';
-    var SCOPE_NAME= Polymer.StyleTransformer.SCOPE_NAME;
-    var XSCOPE_NAME = 'x-scope';
-    var SCOPE_PREFIX = '[' + SCOPE_NAME + '~=';
-    var SCOPE_SUFFIX = ']';
-    var HOST_SELECTOR_PREFIX = '(?:^|[^.])';
-    var HOST_SELECTOR_SUFFIX = '($|[.:[\\s>+~])';
+    var SCOPE_NAME = styleTransformer.SCOPE_NAME;
+    var XSCOPE_NAME = propertyUtils.XSCOPE_NAME;
 
   })();
 </script>
@@ -9578,6 +9887,10 @@ Polymer.Debounce = (function() {
       this._prepConstructor();
       // template
       this._prepTemplate();
+      // styles
+      this._prepStyles();
+      // style properties
+      this._prepStyleProperties();
       // template markup
       this._prepAnnotations();
       // accessors
@@ -9600,6 +9913,8 @@ Polymer.Debounce = (function() {
       this._poolContent();
       // manage configuration
       this._setupConfigure();
+      // setup style properties
+      this._setupStyleProperties();
       // host stack
       this._pushHost();
       // instantiate template
@@ -9638,6 +9953,8 @@ Polymer.Debounce = (function() {
 
   var nativeShadow = Polymer.Settings.useNativeShadow;
   var propertyUtils = Polymer.StyleProperties;
+  var styleUtil = Polymer.StyleUtil;
+  var styleDefaults = Polymer.StyleDefaults;
 
   Polymer({
 
@@ -9649,9 +9966,9 @@ Polymer.Debounce = (function() {
       if (this._appliesToDocument) {
         // used applied element from HTMLImports polyfill or this
         var e = this.__appliedElement || this;
-        this.__cssRules = Polymer.StyleUtil.parser.parse(e.textContent);
-        propertyUtils.decorateRules(this.__cssRules);
-        this._rulesToDefaultProperties(this.__cssRules);
+        var rules = styleUtil.rulesForStyle(e);
+        propertyUtils.decorateStyles([e]);
+        this._rulesToDefaultProperties(rules);
         // NOTE: go async to give a chance to collect properties into 
         // the StyleDefaults before applying
         this.async(this._applyStyle);
@@ -9663,39 +9980,41 @@ Polymer.Debounce = (function() {
     _applyStyle: function() {
       // used applied element from HTMLImports polyfill or this
       var e = this.__appliedElement || this;
-      var props = this._styleProperties = this._computeStyleProperties();
+      this._computeStyleProperties();
+      var props = this._styleProperties;
       var self = this;
-      e.textContent = Polymer.StyleUtil.toCssText(this.__cssRules, 
+      e.textContent = styleUtil.toCssText(styleUtil.rulesForStyle(e), 
         function(rule) {
           // polyfill lack of support for :root
           if (rule.selector === ':root') {
             rule.selector = 'body';
           }
           var css = rule.cssText = rule.parsedCssText;
-          if (rule.properties.consumes) {
+          if (rule.propertyInfo.cssText) {
             // TODO(sorvell): factor better
             // remove property assignments so next function isn't confused
             css = css.replace(propertyUtils.rx.VAR_ASSIGN, '');
             // replace with reified properties, scenario is same as mixin
-            rule.cssText = propertyUtils.valueForMixin(css, props);
+            rule.cssText = propertyUtils.valueForProperties(css, props);
           }
           if (!nativeShadow) {
             Polymer.StyleTransformer.rootRule(rule);
           }
-        });
+        }
+      );
     },
 
     _rulesToDefaultProperties: function(rules) {
       // produce css containing only property assignments.
-      Polymer.StyleUtil.forEachStyleRule(rules, function(rule) {
-        if (!rule.properties.produces) {
+      styleUtil.forEachStyleRule(rules, function(rule) {
+        if (!rule.propertyInfo.properties) {
           rule.cssText = '';
         }
       });
       // tell parser to emit css that includes properties.
-      var cssText = Polymer.StyleUtil.parser.stringify(rules, true);
+      var cssText = styleUtil.parser.stringify(rules, true);
       if (cssText) {
-        Polymer.StyleDefaults.applyCss(cssText);
+        styleDefaults.applyCss(cssText);
       }
     }
 
@@ -10311,7 +10630,7 @@ Polymer.Debounce = (function() {
       } else if (change.path == 'items.splices') {
         this._splices = this._splices.concat(change.value.keySplices);
         this._debounceTemplate(this._render);
-      } else {
+      } else { // items.*
         // slice off 'items.' ('items.'.length == 6)
         var subpath = change.path.slice(6);
         this._forwardItemPath(subpath, change.value);
@@ -10325,6 +10644,9 @@ Polymer.Debounce = (function() {
         var paths = this._observePaths;
         for (var i=0; i<paths.length; i++) {
           if (path.indexOf(paths[i]) === 0) {
+            // TODO(kschaaf): interim solution: ideally this is just an incremental
+            // insertion sort of the changed item
+            this._fullRefresh = true;
             if (this.delay) {
               this.debounce('render', this._render, this.delay);
             } else {
@@ -10337,6 +10659,9 @@ Polymer.Debounce = (function() {
     },
 
     render: function() {
+      // Queue this repeater, then flush all in order
+      this._fullRefresh = true;
+      this.debounce('render', this._render);
       this._flushTemplates();
     },
 
@@ -11672,7 +11997,7 @@ Polymer.Debounce = (function() {
      *
      * @method applyIcon
      * @param {Element} element Element to which the icon is applied.
-     * @param {String} icon Name of the icon to apply.
+     * @param {string} iconName Name of the icon to apply.
      * @return {Element} The svg element which renders the icon.
      */
     applyIcon: function(element, iconName) {
@@ -11687,6 +12012,7 @@ Polymer.Debounce = (function() {
         pde.insertBefore(svg, pde.childNodes[0]);
         return element._svgIcon = svg;
       }
+      return null;
     },
 
     /**
@@ -11719,7 +12045,7 @@ Polymer.Debounce = (function() {
     /**
      * Array of all icon names in this iconset.
      *
-     * @return {Array} Array of icon names.
+     * @return {!Array} Array of icon names.
      */
     _getIconNames: function() {
        return Object.keys(this._icons).map(function(n) {
@@ -11748,13 +12074,18 @@ Polymer.Debounce = (function() {
      * Produce installable clone of the SVG element matching `id` in this
      * iconset, or `undefined` if there is no matching element.
      *
-     * @return {Object} Returns an installable clone of the SVG element
+     * @return {Element} Returns an installable clone of the SVG element
      * matching `id`.
      */
     _cloneIcon: function(id) {
       return this._prepareSvgClone(this._icons[id], this.size);
     },
 
+    /**
+     * @param {Element} sourceSvg
+     * @param {number} size
+     * @return {Element}
+     */
     _prepareSvgClone: function(sourceSvg, size) {
       if (sourceSvg) {
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -11766,6 +12097,7 @@ Polymer.Debounce = (function() {
         svg.appendChild(sourceSvg.cloneNode(true)).removeAttribute('id');
         return svg;
       }
+      return null;
     }
 
   });
@@ -11935,7 +12267,7 @@ Polymer.Debounce = (function() {
 </script>
 <script>
 
-  /** @behavior */
+  /** @polymerBehavior */
   Polymer.IronSelectableBehavior = {
 
     properties: {
@@ -12224,7 +12556,7 @@ Polymer.Debounce = (function() {
 </script>
 <script>
 
-  /** @behavior */
+  /** @polymerBehavior */
   Polymer.IronMultiSelectableBehavior = [
     {
 
@@ -12440,7 +12772,385 @@ Polymer.Debounce = (function() {
   }
 
 </style>
+
+
 <script>
+  (function() {
+    'use strict';
+
+    /**
+     * Chrome uses an older version of DOM Level 3 Keyboard Events
+     *
+     * Most keys are labeled as text, but some are Unicode codepoints.
+     * Values taken from: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html#KeySet-Set
+     */
+    var KEY_IDENTIFIER = {
+      'U+0009': 'tab',
+      'U+001B': 'esc',
+      'U+0020': 'space',
+      'U+002A': '*',
+      'U+0030': '0',
+      'U+0031': '1',
+      'U+0032': '2',
+      'U+0033': '3',
+      'U+0034': '4',
+      'U+0035': '5',
+      'U+0036': '6',
+      'U+0037': '7',
+      'U+0038': '8',
+      'U+0039': '9',
+      'U+0041': 'a',
+      'U+0042': 'b',
+      'U+0043': 'c',
+      'U+0044': 'd',
+      'U+0045': 'e',
+      'U+0046': 'f',
+      'U+0047': 'g',
+      'U+0048': 'h',
+      'U+0049': 'i',
+      'U+004A': 'j',
+      'U+004B': 'k',
+      'U+004C': 'l',
+      'U+004D': 'm',
+      'U+004E': 'n',
+      'U+004F': 'o',
+      'U+0050': 'p',
+      'U+0051': 'q',
+      'U+0052': 'r',
+      'U+0053': 's',
+      'U+0054': 't',
+      'U+0055': 'u',
+      'U+0056': 'v',
+      'U+0057': 'w',
+      'U+0058': 'x',
+      'U+0059': 'y',
+      'U+005A': 'z',
+      'U+007F': 'del'
+    };
+
+    /**
+     * Special table for KeyboardEvent.keyCode.
+     * KeyboardEvent.keyIdentifier is better, and KeyBoardEvent.key is even better
+     * than that.
+     *
+     * Values from: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Value_of_keyCode
+     */
+    var KEY_CODE = {
+      9: 'tab',
+      13: 'enter',
+      27: 'esc',
+      33: 'pageup',
+      34: 'pagedown',
+      35: 'end',
+      36: 'home',
+      32: 'space',
+      37: 'left',
+      38: 'up',
+      39: 'right',
+      40: 'down',
+      46: 'del',
+      106: '*'
+    };
+
+    /**
+     * MODIFIER_KEYS maps the short name for modifier keys used in a key
+     * combo string to the property name that references those same keys
+     * in a KeyboardEvent instance.
+     */
+    var MODIFIER_KEYS = {
+      shift: 'shiftKey',
+      ctrl: 'ctrlKey',
+      alt: 'altKey',
+      meta: 'metaKey'
+    };
+
+    /**
+     * KeyboardEvent.key is mostly represented by printable character made by
+     * the keyboard, with unprintable keys labeled nicely.
+     *
+     * However, on OS X, Alt+char can make a Unicode character that follows an
+     * Apple-specific mapping. In this case, we
+     * fall back to .keyCode.
+     */
+    var KEY_CHAR = /[a-z0-9*]/;
+
+    /**
+     * Matches a keyIdentifier string.
+     */
+    var IDENT_CHAR = /U\+/;
+
+    function transformKey(key) {
+      var validKey = '';
+      if (key) {
+        var lKey = key.toLowerCase();
+        if (lKey.length == 1) {
+          if (KEY_CHAR.test(lKey)) {
+            validKey = lKey;
+          }
+        } else if (lKey == 'multiply') {
+          // numpad '*' can map to Multiply on IE/Windows
+          validKey = '*';
+        } else {
+          validKey = lKey;
+        }
+      }
+      return validKey;
+    }
+
+    function transformKeyIdentifier(keyIdent) {
+      var validKey = '';
+      if (keyIdent) {
+        if (IDENT_CHAR.test(keyIdent)) {
+          validKey = KEY_IDENTIFIER[keyIdent];
+        } else {
+          validKey = keyIdent.toLowerCase();
+        }
+      }
+      return validKey;
+    }
+
+    function transformKeyCode(keyCode) {
+      var validKey = '';
+      if (Number(keyCode)) {
+        if (keyCode >= 65 && keyCode <= 90) {
+          // ascii a-z
+          // lowercase is 32 offset from uppercase
+          validKey = String.fromCharCode(32 + keyCode);
+        } else if (keyCode >= 112 && keyCode <= 123) {
+          // function keys f1-f12
+          validKey = 'f' + (keyCode - 112);
+        } else if (keyCode >= 48 && keyCode <= 57) {
+          // top 0-9 keys
+          validKey = String(48 - keyCode);
+        } else if (keyCode >= 96 && keyCode <= 105) {
+          // num pad 0-9
+          validKey = String(96 - keyCode);
+        } else {
+          validKey = KEY_CODE[keyCode];
+        }
+      }
+      return validKey;
+    }
+
+    function normalizedKeyForEvent(keyEvent) {
+      // fall back from .key, to .keyIdentifier, to .keyCode, and then to
+      // .detail.key to support artificial keyboard events
+      return transformKey(keyEvent.key) ||
+        transformKeyIdentifier(keyEvent.keyIdentifier) ||
+        transformKeyCode(keyEvent.keyCode) ||
+        transformKey(keyEvent.detail.key) || '';
+    }
+
+    function keyComboMatchesEvent(keyCombo, keyEvent) {
+      return normalizedKeyForEvent(keyEvent) === keyCombo.key &&
+        !!keyEvent.shiftKey === !!keyCombo.shiftKey &&
+        !!keyEvent.ctrlKey === !!keyCombo.ctrlKey &&
+        !!keyEvent.altKey === !!keyCombo.altKey &&
+        !!keyEvent.metaKey === !!keyCombo.metaKey;
+    }
+
+    function parseKeyComboString(keyComboString) {
+      return keyComboString.split('+').reduce(function(parsedKeyCombo, keyComboPart) {
+        var eventParts = keyComboPart.split(':');
+        var keyName = eventParts[0];
+        var event = eventParts[1];
+
+        if (keyName in MODIFIER_KEYS) {
+          parsedKeyCombo[MODIFIER_KEYS[keyName]] = true;
+        } else {
+          parsedKeyCombo.key = keyName;
+          parsedKeyCombo.event = event || 'keydown';
+        }
+
+        return parsedKeyCombo;
+      }, {
+        combo: keyComboString.split(':').shift()
+      });
+    }
+
+    function parseEventString(eventString) {
+      return eventString.split(' ').map(function(keyComboString) {
+        return parseKeyComboString(keyComboString);
+      });
+    }
+
+    Polymer.IronA11yKeysBehavior = {
+      properties: {
+        /**
+         * The HTMLElement that will be firing relevant KeyboardEvents.
+         */
+        keyEventTarget: {
+          type: Object,
+          value: function() {
+            return this;
+          }
+        },
+
+        _boundKeyHandlers: {
+          value: function() {
+            return [];
+          }
+        },
+
+        // We use this due to a limitation in IE10 where instances will have
+        // own properties of everything on the "prototype".
+        _imperativeKeyBindings: {
+          value: function() {
+            return {};
+          }
+        }
+      },
+
+      observers: [
+        '_resetKeyEventListeners(keyEventTarget, _boundKeyHandlers)'
+      ],
+
+      keyBindings: {},
+
+      registered: function() {
+        this._prepKeyBindings();
+      },
+
+      attached: function() {
+        this._listenKeyEventListeners();
+      },
+
+      detached: function() {
+        this._unlistenKeyEventListeners();
+      },
+
+      /**
+       * Can be used to imperatively add a key binding to the implementing
+       * element. This is the imperative equivalent of declaring a keybinding
+       * in the `keyBindings` prototype property.
+       */
+      addOwnKeyBinding: function(eventString, handlerName) {
+        this._imperativeKeyBindings[eventString] = handlerName;
+        this._prepKeyBindings();
+        this._resetKeyEventListeners();
+      },
+
+      /**
+       * When called, will remove all imperatively-added key bindings.
+       */
+      removeOwnKeyBindings: function() {
+        this._imperativeKeyBindings = {};
+        this._prepKeyBindings();
+        this._resetKeyEventListeners();
+      },
+
+      keyboardEventMatchesKeys: function(event, eventString) {
+        var keyCombos = parseEventString(eventString);
+        var index;
+
+        for (index = 0; index < keyCombos.length; ++index) {
+          if (keyComboMatchesEvent(keyCombos[index], event)) {
+            return true;
+          }
+        }
+
+        return false;
+      },
+
+      _collectKeyBindings: function() {
+        var keyBindings = this.behaviors.map(function(behavior) {
+          return behavior.keyBindings;
+        });
+
+        if (keyBindings.indexOf(this.keyBindings) === -1) {
+          keyBindings.push(this.keyBindings);
+        }
+
+        return keyBindings;
+      },
+
+      _prepKeyBindings: function() {
+        this._keyBindings = {};
+
+        this._collectKeyBindings().forEach(function(keyBindings) {
+          for (var eventString in keyBindings) {
+            this._addKeyBinding(eventString, keyBindings[eventString]);
+          }
+        }, this);
+
+        for (var eventString in this._imperativeKeyBindings) {
+          this._addKeyBinding(eventString, this._imperativeKeyBindings[eventString]);
+        }
+      },
+
+      _addKeyBinding: function(eventString, handlerName) {
+        parseEventString(eventString).forEach(function(keyCombo) {
+          this._keyBindings[keyCombo.event] =
+            this._keyBindings[keyCombo.event] || [];
+
+          this._keyBindings[keyCombo.event].push([
+            keyCombo,
+            handlerName
+          ]);
+        }, this);
+      },
+
+      _resetKeyEventListeners: function() {
+        this._unlistenKeyEventListeners();
+
+        if (this.isAttached) {
+          this._listenKeyEventListeners();
+        }
+      },
+
+      _listenKeyEventListeners: function() {
+        Object.keys(this._keyBindings).forEach(function(eventName) {
+          var keyBindings = this._keyBindings[eventName];
+          var boundKeyHandler = this._onKeyBindingEvent.bind(this, keyBindings);
+
+          this._boundKeyHandlers.push([this.keyEventTarget, eventName, boundKeyHandler]);
+
+          this.keyEventTarget.addEventListener(eventName, boundKeyHandler);
+        }, this);
+      },
+
+      _unlistenKeyEventListeners: function() {
+        var keyHandlerTuple;
+        var keyEventTarget;
+        var eventName;
+        var boundKeyHandler;
+
+        while (this._boundKeyHandlers.length) {
+          // My kingdom for block-scope binding and destructuring assignment..
+          keyHandlerTuple = this._boundKeyHandlers.pop();
+          keyEventTarget = keyHandlerTuple[0];
+          eventName = keyHandlerTuple[1];
+          boundKeyHandler = keyHandlerTuple[2];
+
+          keyEventTarget.removeEventListener(eventName, boundKeyHandler);
+        }
+      },
+
+      _onKeyBindingEvent: function(keyBindings, event) {
+        keyBindings.forEach(function(keyBinding) {
+          var keyCombo = keyBinding[0];
+          var handlerName = keyBinding[1];
+
+          if (!event.defaultPrevented && keyComboMatchesEvent(keyCombo, event)) {
+            this._triggerKeyHandler(keyCombo, handlerName, event);
+          }
+        }, this);
+      },
+
+      _triggerKeyHandler: function(keyCombo, handlerName, keyboardEvent) {
+        var detail = Object.create(keyCombo);
+        detail.keyboardEvent = keyboardEvent;
+
+        this[handlerName].call(this, new CustomEvent(keyCombo.event, {
+          detail: detail
+        }));
+      }
+    };
+  })();
+</script>
+<script>
+
+  /** @polymerBehavior */
 
   Polymer.IronControlState = {
 
@@ -12530,7 +13240,8 @@ Polymer.Debounce = (function() {
 </script>
 <script>
 
-  Polymer.IronButtonState = {
+  /** @polymerBehavior */
+  Polymer.IronButtonState = [Polymer.IronA11yKeysBehavior, {
 
     properties: {
 
@@ -12580,9 +13291,13 @@ Polymer.Debounce = (function() {
     listeners: {
       down: '_downHandler',
       up: '_upHandler',
-      keydown: '_keyDownHandler',
-      keyup: '_keyUpHandler',
       tap: '_tapHandler'
+    },
+
+    keyBindings: {
+      'enter:keydown': '_asyncClick',
+      'space:keydown': '_downHandler',
+      'space:keyup': '_spaceKeyUpHandler',
     },
 
     _tapHandler: function() {
@@ -12609,26 +13324,11 @@ Polymer.Debounce = (function() {
       this._setPressed(false);
     },
 
-    _keyDownHandler: function(e) {
-      switch(e.keyCode) {
-        case this.keyCodes.ENTER_KEY:
-          this._asyncClick();
-          break;
-
-        case this.keyCodes.SPACE:
-          this._setPressed(true);
-          break;
-
+    _spaceKeyUpHandler: function(e) {
+      if (this.pressed) {
+        this._asyncClick();
       }
-    },
-
-    _keyUpHandler: function(e) {
-     if (e.keyCode == this.keyCodes.SPACE) {
-        if (this.pressed) {
-          this._asyncClick();
-        }
-        this._setPressed(false);
-      }
+      this._setPressed(false);
     },
 
     // trigger click asynchronously, the asynchrony is useful to allow one
@@ -12667,47 +13367,54 @@ Polymer.Debounce = (function() {
       }
     }
 
-  };
+  }];
 
 </script>
 <script>
 
-  Polymer.PaperButtonElevation = {
-
-    properties: {
-
-      _elevation: {
-        type: Number
-      }
-
-    },
-
-    _calculateElevation: function() {
-      var e = 1;
-      if (this.disabled || !this.raised) {
-        e = 0;
-      } else if (this.active || this.pressed) {
-        e = 2;
-      } else if (this.focused) {
-        e = 3;
-      }
-      this._elevation = e;
-    }
-
-  };
-
-  Polymer.PaperButtonBehavior = [
+  /** @polymerBehavior */
+  Polymer.PaperButtonBehavior = Polymer.IronButtonState.concat(
     Polymer.IronControlState,
-    Polymer.IronButtonState,
-    Polymer.PaperButtonElevation
-  ];
+    {
+      properties: {
+
+        _elevation: {
+          type: Number
+        }
+
+      },
+
+      hostAttributes: {
+        role: 'button',
+        tabindex: '0'
+      },
+
+      _calculateElevation: function() {
+        var e = 1;
+        if (this.disabled || !this.raised) {
+          e = 0;
+        } else if (this.active || this.pressed) {
+          e = 4;
+        } else if (this.focused) {
+          e = 2;
+        }
+        this._elevation = e;
+      }
+    }
+  );
 
 </script>
+
+
+
+
 <style is="custom-style">
-  * {
+  :root {
     --paper-icon-button-disabled-text: var(--disabled-text-color);
   }
 </style>
+
+
 
 <style>
 
@@ -13620,7 +14327,6 @@ Polymer.Debounce = (function() {
 </style>
 <style is="custom-style">
 
-
   :root {
 
     --shadow-transition: {
@@ -13638,31 +14344,31 @@ Polymer.Debounce = (function() {
     --shadow-elevation-3dp: {
       box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
                   0 1px 8px 0 rgba(0, 0, 0, 0.12),
-                  0 3px 3px -2px rgba(0, 0, 0, 0.2);
+                  0 3px 3px -2px rgba(0, 0, 0, 0.4);
     };
 
     --shadow-elevation-4dp: {
       box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
                   0 1px 10px 0 rgba(0, 0, 0, 0.12),
-                  0 2px 4px -1px rgba(0, 0, 0, 0.2);
+                  0 2px 4px -1px rgba(0, 0, 0, 0.4);
     };
 
     --shadow-elevation-6dp: {
       box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14),
                   0 1px 18px 0 rgba(0, 0, 0, 0.12),
-                  0 3px 5px -1px rgba(0, 0, 0, 0.2);
+                  0 3px 5px -1px rgba(0, 0, 0, 0.4);
     };
 
     --shadow-elevation-8dp: {
       box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
                   0 3px 14px 2px rgba(0, 0, 0, 0.12),
-                  0 5px 5px -3px rgba(0, 0, 0, 0.2);
+                  0 5px 5px -3px rgba(0, 0, 0, 0.4);
     };
 
     --shadow-elevation-16dp: {
       box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14),
                   0  6px 30px 5px rgba(0, 0, 0, 0.12),
-                  0  8px 10px -5px rgba(0, 0, 0, 0.2);
+                  0  8px 10px -5px rgba(0, 0, 0, 0.4);
     };
 
   }
@@ -13902,6 +14608,7 @@ Polymer.Debounce = (function() {
 
 <script>
 
+  /** @polymerBehavior */
   Polymer.IronMenuBehavior = [{
 
     properties: {
@@ -14027,13 +14734,13 @@ Polymer.Debounce = (function() {
 
 
 <style is="custom-style">
-
-  * {
-
+  :root {
     --paper-toolbar-background: var(--default-primary-color);
     --paper-toolbar-color: var(--text-primary-color);
   }
 </style>
+
+
 
 <style>
 
@@ -14053,7 +14760,8 @@ Polymer.Debounce = (function() {
 
   <style>
     :host {
-      @apply(--layout-inline --layout-center-center);
+      @apply(--layout-inline);
+      @apply(--layout-center-center);
       position: relative;
 
       vertical-align: middle;
@@ -14381,156 +15089,149 @@ Polymer.Debounce = (function() {
 </defs></svg>
 </iron-iconset-svg>
 <dom-module id="paper-drawer-panel" assetpath="../../paper-drawer-panel/">
-
   <style>
-    :host {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
+:host {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-    iron-selector > #drawer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      will-change: transform;
-      box-sizing: border-box;
-      -moz-box-sizing: border-box;
+iron-selector > #drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: white;
+  will-change: transform;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
 
-      @apply(--paper-drawer-panel-drawer-container);
-    }
+  @apply(--paper-drawer-panel-drawer-container);
+}
 
-    .transition > #drawer {
-      transition: -webkit-transform ease-in-out 0.3s, width ease-in-out 0.3s;
-      transition: transform ease-in-out 0.3s, width ease-in-out 0.3s;
-    }
+.transition > #drawer {
+  transition: -webkit-transform ease-in-out 0.3s, width ease-in-out 0.3s;
+  transition: transform ease-in-out 0.3s, width ease-in-out 0.3s;
+}
 
-    /*
-    right-drawer: make drawer on the right side
-    */
-    .right-drawer > #drawer {
-      left: auto;
-      right: 0;
-    }
+.left-drawer > #drawer {
+  @apply(--paper-drawer-panel-left-drawer-container);
+}
 
-    paper-drawer-panel #drawer > * {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      -moz-box-sizing: border-box;
-    }
+.right-drawer > #drawer {
+  left: auto;
+  right: 0;
 
-    iron-selector > #main {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
+  @apply(--paper-drawer-panel-right-drawer-container);
+}
 
-      @apply(--paper-drawer-panel-main-container);
-    }
+iron-selector > #main {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
 
-    .transition > #main {
-      transition: left ease-in-out 0.3s, padding ease-in-out 0.3s;
-    }
+  @apply(--paper-drawer-panel-main-container);
+}
 
-    .right-drawer > #main {
-      left: 0;
-    }
+.transition > #main {
+  transition: left ease-in-out 0.3s, padding ease-in-out 0.3s;
+}
 
-    .right-drawer.transition > #main {
-      transition: right ease-in-out 0.3s, padding ease-in-out 0.3s;
-    }
+.right-drawer > #main {
+  left: 0;
+}
 
-    #main > [main] {
-      height: 100%;
-    }
+.right-drawer.transition > #main {
+  transition: right ease-in-out 0.3s, padding ease-in-out 0.3s;
+}
 
-    #scrim {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity ease-in-out 0.38s, visibility ease-in-out 0.38s;
-      background-color: rgba(0, 0, 0, 0.3);
-    }
+#main > [main] {
+  height: 100%;
+}
 
-    #edgeSwipeOverlay {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: 20px;
-    }
+#scrim {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity ease-in-out 0.38s, visibility ease-in-out 0.38s;
+  background-color: rgba(0, 0, 0, 0.3);
+}
 
-    .right-drawer > #main > #edgeSwipeOverlay {
-      right: 0;
-      left: auto;
-    }
+#edgeSwipeOverlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 20px;
+}
 
-    .narrow-layout > #drawer.iron-selected {
-      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
-    }
+.right-drawer > #main > #edgeSwipeOverlay {
+  right: 0;
+  left: auto;
+}
 
-    .right-drawer.narrow-layout > #drawer.iron-selected {
-      box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.15);
-    }
+.narrow-layout > #drawer.iron-selected {
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+}
 
-    .narrow-layout > #drawer > ::content[select="[drawer]"] > * {
-      border: 0;
-    }
+.right-drawer.narrow-layout > #drawer.iron-selected {
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.15);
+}
 
-    .narrow-layout > #drawer:not(.iron-selected) {
-      -webkit-transform: translateX(-100%);
-      transform: translateX(-100%);
-    }
+.narrow-layout > #drawer > ::content[select="[drawer]"] > * {
+  border: 0;
+}
 
-    .right-drawer.narrow-layout > #drawer:not(.iron-selected) {
-      left: auto;
-      -webkit-transform: translateX(100%);
-      transform: translateX(100%);
-    }
+.left-drawer.narrow-layout > #drawer:not(.iron-selected) {
+  -webkit-transform: translateX(-100%);
+  transform: translateX(-100%);
+}
 
-    .narrow-layout > #main {
-      left: 0 !important;
-      padding: 0;
-    }
+.right-drawer.narrow-layout > #drawer:not(.iron-selected) {
+  left: auto;
+  -webkit-transform: translateX(100%);
+  transform: translateX(100%);
+}
 
-    .right-drawer.narrow-layout > #main {
-      left: 0;
-      right: 0;
-      padding: 0;
-    }
+.narrow-layout > #main {
+  left: 0 !important;
+  padding: 0;
+}
 
-    .narrow-layout > #main:not(.iron-selected) > #scrim,
-    .dragging > #main > #scrim {
-      visibility: visible;
-      opacity: var(--paper-drawer-panel-scrim-opacity, 1);
-    }
+.right-drawer.narrow-layout > #main {
+  left: 0;
+  right: 0;
+  padding: 0;
+}
 
-    .narrow-layout > #main > * {
-      margin: 0;
-      min-height: 100%;
-      left: 0;
-      right: 0;
-      box-sizing: border-box;
-      -moz-box-sizing: border-box;
-    }
+.narrow-layout > #main:not(.iron-selected) > #scrim,
+.dragging > #main > #scrim {
+  visibility: visible;
+  opacity: var(--paper-drawer-panel-scrim-opacity, 1);
+}
 
-    iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
-      display: none;
-    }
-  </style>
+.narrow-layout > #main > * {
+  margin: 0;
+  min-height: 100%;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
+  display: none;
+}
+</style>
 
   <template>
     <iron-media-query on-query-matches-changed="_onQueryMatchesChanged" query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]">
@@ -14810,6 +15511,7 @@ Polymer.Debounce = (function() {
           dragging: dragging,
           'narrow-layout': narrow,
           'right-drawer': rightDrawer,
+          'left-drawer': !rightDrawer,
           transition: transition
         });
       },
@@ -15543,6 +16245,10 @@ Polymer.Debounce = (function() {
         return this.element.recenters;
       },
 
+      get center() {
+        return this.element.center;
+      },
+
       get mouseDownElapsed() {
         var elapsed;
 
@@ -15700,19 +16406,30 @@ Polymer.Debounce = (function() {
       },
 
       downAction: function(event) {
+        var xCenter = this.containerMetrics.width / 2;
+        var yCenter = this.containerMetrics.height / 2;
+
         this.resetInteractionState();
         this.mouseDownStart = Utility.now();
 
-        this.xStart = event ?
-          event.detail.x - this.containerMetrics.boundingRect.left :
-          this.containerMetrics.width / 2;
-        this.yStart = event ?
-          event.detail.y - this.containerMetrics.boundingRect.top :
-          this.containerMetrics.height / 2;
+        if (this.center) {
+          this.xStart = xCenter;
+          this.yStart = yCenter;
+          this.slideDistance = Utility.distance(
+            this.xStart, this.yStart, this.xEnd, this.yEnd
+          );
+        } else {
+          this.xStart = event ?
+              event.detail.x - this.containerMetrics.boundingRect.left :
+              this.containerMetrics.width / 2;
+          this.yStart = event ?
+              event.detail.y - this.containerMetrics.boundingRect.top :
+              this.containerMetrics.height / 2;
+        }
 
         if (this.recenters) {
-          this.xEnd = this.containerMetrics.width / 2;
-          this.yEnd = this.containerMetrics.height / 2;
+          this.xEnd = xCenter;
+          this.yEnd = yCenter;
           this.slideDistance = Utility.distance(
             this.xStart, this.yStart, this.xEnd, this.yEnd
           );
@@ -15784,6 +16501,18 @@ Polymer.Debounce = (function() {
          * @default false
          */
         recenters: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, ripples will center inside its container
+         *
+         * @attribute recenters
+         * @type boolean
+         * @default false
+         */
+        center: {
           type: Boolean,
           value: false
         },
@@ -15941,7 +16670,7 @@ Polymer.Debounce = (function() {
     }
   </style>
   <template>
-    <paper-ripple class="circle" recenters=""></paper-ripple>
+    <paper-ripple class="circle" initial-opacity="0.1" center=""></paper-ripple>
     <iron-icon id="icon" src="[[src]]" icon="[[icon]]"></iron-icon>
   </template>
 </dom-module>
@@ -16103,6 +16832,8 @@ Polymer.Debounce = (function() {
 
   <style>
     :host {
+      @apply(--paper-toolbar);
+
       /* technical */
       display: block;
       position: relative;
@@ -16114,9 +16845,6 @@ Polymer.Debounce = (function() {
 
       background: var(--paper-toolbar-background);
       color: var(--paper-toolbar-color);
-      @apply(--paper-font-title);
-
-      @apply(--paper-toolbar);
     }
 
     :host(.animate) {
@@ -16158,7 +16886,6 @@ Polymer.Debounce = (function() {
 
       .toolbar-tools {
         height: 56px;
-        padding: 0;
       }
     }
 
@@ -16195,6 +16922,44 @@ Polymer.Debounce = (function() {
       pointer-events: auto;
     }
 
+    .toolbar-tools > ::content [title] {
+      @apply(--paper-font-title);
+      @apply(--layout-flex);
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+
+      /*
+       * Polymer/polymer/issues/1525
+       * --paper-font-title defines a `font-weight`
+       * let's override its value, but we need `important!`
+       * because all mixins are resolved in rule's selector that has higher precedence
+       * than the current selector.
+       */
+      font-weight: 400 !important;
+    }
+
+    .toolbar-tools > ::content paper-icon-button[icon=menu] {
+      margin-left: -8px;
+      margin-right: 24px;
+    }
+
+    .toolbar-tools > ::content paper-icon-button + paper-icon-button {
+      margin-right: -8px;
+    }
+
+    .toolbar-tools > ::content > [title],
+    .toolbar-tools > ::content[select=".middle"] > [title],
+    .toolbar-tools > ::content[select=".bottom"] > [title] {
+      margin-left: 56px;
+    }
+
+    .toolbar-tools > ::content > paper-icon-button + [title],
+    .toolbar-tools > ::content[select=".middle"] paper-icon-button + [title],
+    .toolbar-tools > ::content[select=".bottom"] paper-icon-button + [title] {
+      margin-left: 0;
+    }
   </style>
 
   <template>
