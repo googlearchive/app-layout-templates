@@ -16,6 +16,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../paper-menu/paper-menu.html">
 <link rel="import" href="../../../paper-toolbar/paper-toolbar.html">
 
+<!--
+
+Left Nav + List + Detail
+
+ -->
 <dom-module id="x-app">
 
   <link rel="import" type="css" href="x-app.css">
@@ -24,7 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <paper-drawer-panel id="navDrawerPanel" responsive-width="1280px">
 
-      <div class="nav" drawer on-tap="_navTap">
+      <div class="nav" drawer>
         <!-- Nav Content -->
       </div>
 
@@ -34,6 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <paper-header-panel class="list-panel" drawer>
 
+          <!-- List Toolbar -->
           <paper-toolbar>
             <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
           </paper-toolbar>
@@ -66,6 +72,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <paper-header-panel class="content-panel" main>
 
+          <!-- Main Toolbar -->
           <paper-toolbar>
             <paper-icon-button icon="arrow-back" list-toggle></paper-icon-button>
           </paper-toolbar>
@@ -88,16 +95,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       is: 'x-app',
 
       _computeListWidth: function(isMobile) {
-        // when in mobile screen size, make the list has 100% width to cover the whole screen
+        // when in mobile screen size, make the list be 100% width to cover the whole screen
         return isMobile ? '100%' : '33%';
       },
 
       _listTap: function() {
         this.$.mainDrawerPanel.closeDrawer();
-      },
-
-      _navTap: function() {
-        this.$.navDrawerPanel.closeDrawer();
       }
 
     });

@@ -33,7 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 paper-toolbar {
-  --paper-toolbar-background: #42A5F5;
+  background-color: #42A5F5;
 }
 
 .list {
@@ -45,7 +45,6 @@ paper-toolbar {
   border-bottom: 1px solid #dedede;
   background-color: #fafafa;
 }
-
 
 .main-drawer-panel:not([narrow]) [list-toggle] {
   display: none;

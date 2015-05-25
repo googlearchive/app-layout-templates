@@ -18,6 +18,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../paper-menu/paper-menu.html">
 <link rel="import" href="../../../paper-toolbar/paper-toolbar.html">
 
+<!--
+
+Extended Header + List Left + Card Over Toolbar
+
+ -->
 <dom-module id="x-app">
 
   <link rel="import" type="css" href="x-app.css">
@@ -28,6 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <paper-header-panel class="list-panel" drawer mode="seamed">
 
+        <!-- List Toolbar -->
         <paper-toolbar class$="{{toolbarClass}}"></paper-toolbar>
 
         <!-- List -->
@@ -58,6 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <paper-header-panel class="main-panel" main mode="{{mainMode}}">
 
+        <!-- Main Toolbar -->
         <paper-toolbar class$="{{toolbarClass}}">
           <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
         </paper-toolbar>
