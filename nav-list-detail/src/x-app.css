@@ -12,13 +12,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 .nav {
-  height: 100%;
-  background-color: #fff;
   border-right: 1px solid #ccc;
 }
 
 .list-panel {
-  height: 100%;
   background-color: #fafafa;
 }
 
@@ -26,10 +23,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   --paper-header-panel-standard-container: {
     border-right: 1px solid #ccc;
   };
-}
-
-.content-panel {
-  height: 100%;
 }
 
 paper-toolbar {

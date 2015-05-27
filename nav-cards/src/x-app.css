@@ -12,13 +12,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 .nav {
-  height: 100%;
-  background-color: #fff;
   border-right: 1px solid #ccc;
 }
 
 .main {
-  height: 100%;
   background-color: #eee;
 }
 
