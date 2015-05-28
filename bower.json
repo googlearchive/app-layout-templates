@@ -1,6 +1,7 @@
 {
   "name": "app-layout-templates",
   "version": "0.9.0",
+  "license": "http://polymer.github.io/LICENSE.txt",
   "description": "Application layout templates",
   "authors": [
     "The Polymer Authors"
