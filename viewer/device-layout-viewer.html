@@ -51,11 +51,7 @@ Displays a page on different device layouts.
     <div class="sidebar" hidden$="{{hideSidebar}}">
 
       <h4>Application</h4>
-      <select on-change="_selectChange">
-        <template is="dom-repeat" items="{{sources}}">
-          <option>{{item.name}}</option>
-        </template>
-      </select>
+      <select id="select" on-change="_selectChange"></select>
 
       <a href="{{source.github}}" target="_blank" hidden$="{{!source.github}}"><h4>Github Link</h4></a>
 
@@ -119,6 +115,11 @@ Displays a page on different device layouts.
       },
 
       _sourcesChanged: function(sources) {
+        this.$.select.textContent = '';
+        for (var i=0, s; s=sources[i]; i++) {
+          console.log(s.name)
+          this.$.select.add(this.create('option', {text: s.name}));
+        }
         this.source = sources[0];
       },
 
