@@ -1,7 +1,7 @@
 Application Layout Templates
 ============================
 
-Use the application layout templates provided and start building responsive application.
+Use the application layout templates provided and start building responsive applications.
 
 ### [Application Layout Templates Viewer](http://polymerelements.github.io/app-layout-templates/index.html)
 
