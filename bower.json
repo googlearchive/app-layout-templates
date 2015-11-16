@@ -22,5 +22,6 @@
     "paper-styles": "polymerelements/paper-styles#^1.0.0",
     "paper-toggle-button": "polymerelements/paper-toggle-button#^1.0.0",
     "paper-toolbar": "polymerelements/paper-toolbar#^1.0.0"
-  }
+  },
+  "ignore": []
 }
