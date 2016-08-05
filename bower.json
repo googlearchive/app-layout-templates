@@ -1,27 +1,32 @@
 {
   "name": "app-layout-templates",
   "version": "1.0.0",
-  "license": "http://polymer.github.io/LICENSE.txt",
   "description": "Application layout templates",
   "authors": [
     "The Polymer Authors"
   ],
-  "private": true,
-  "dependencies": {
-    "polymer": "polymer/polymer#^1.5.0",
-    "iron-flex-layout": "polymerelements/iron-flex-layout#^1.0.0",
-    "iron-icon": "polymerelements/iron-icon#^1.0.0",
-    "iron-icons": "polymerelements/iron-icons#^1.0.0",
-    "iron-selector": "polymerelements/iron-selector#^1.0.0",
-    "paper-drawer-panel": "polymerelements/paper-drawer-panel#^1.0.0",
-    "paper-header-panel": "polymerelements/paper-header-panel#^1.0.0",
-    "paper-icon-button": "polymerelements/paper-icon-button#^1.0.0",
-    "paper-item": "polymerelements/paper-item#^1.0.0",
-    "paper-material": "polymerelements/paper-material#^1.0.0",
-    "paper-menu": "polymerelements/paper-menu#^1.0.0",
-    "paper-styles": "polymerelements/paper-styles#^1.0.0",
-    "paper-toggle-button": "polymerelements/paper-toggle-button#^1.0.0",
-    "paper-toolbar": "polymerelements/paper-toolbar#^1.0.0"
+  "license": "https://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/PolymerElements/app-layout-templates",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerElements/app-layout-templates"
   },
-  "ignore": []
+  "dependencies": {
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "iron-icon": "PolymerElements/iron-icon#^1.0.0",
+    "iron-icons": "PolymerElements/iron-icons#^1.0.0",
+    "iron-selector": "PolymerElements/iron-selector#^1.0.0",
+    "paper-drawer-panel": "PolymerElements/paper-drawer-panel#^1.0.0",
+    "paper-header-panel": "PolymerElements/paper-header-panel#^1.0.0",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.0.0",
+    "paper-item": "PolymerElements/paper-item#^1.0.0",
+    "paper-material": "PolymerElements/paper-material#^1.0.0",
+    "paper-menu": "PolymerElements/paper-menu#^1.0.0",
+    "paper-styles": "PolymerElements/paper-styles#^1.0.0",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#^1.0.0",
+    "paper-toolbar": "PolymerElements/paper-toolbar#^1.0.0",
+    "polymer": "Polymer/polymer#^1.5.0"
+  },
+  "ignore": [],
+  "private": true
 }
